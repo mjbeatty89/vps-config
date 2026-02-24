@@ -1,0 +1,4 @@
+*.log
+*.key
+*.pem
+secrets/

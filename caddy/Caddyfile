@@ -1,0 +1,6 @@
+# Public Gateway - Caddy Reverse Proxy
+# Two-Box Architecture: this VPS proxies traffic to home-lab via Tailscale
+
+ai.aadd.rocks {
+	reverse_proxy 100.x.y.z:5000 # TODO: Replace with VCM's actual Tailscale IP
+}

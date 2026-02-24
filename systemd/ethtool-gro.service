@@ -1,0 +1,11 @@
+[Unit]
+Description=Configure UDP GRO for Tailscale on enp0s6
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/ethtool -K enp0s6 rx-udp-gro-forwarding on rx-gro-list off
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
