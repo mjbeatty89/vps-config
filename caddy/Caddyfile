@@ -1,6 +1,34 @@
 # Public Gateway - Caddy Reverse Proxy
 # Two-Box Architecture: this VPS proxies traffic to home-lab via Tailscale
+# Host: virtual-tunnel-vnic | Public IP: 147.224.179.179 | Tailscale: 100.67.166.50
+#
+# DNS REQUIRED: Add A records in Cloudflare (DNS only, no proxy) pointing to 147.224.179.179
+#   dash.aadd.rocks, n8n.aadd.rocks, status.aadd.rocks, portainer.aadd.rocks
+#   ai.aadd.rocks (when VCM Tailscale subnet routing is configured)
 
-ai.aadd.rocks {
-	reverse_proxy 100.x.y.z:5000 # TODO: Replace with VCM's actual Tailscale IP
+# ── Dashboard (Heimdall) ───────────────────────────────────────────────────
+dash.aadd.rocks {
+	reverse_proxy localhost:8080
 }
+
+# ── Workflow Automation (n8n) ──────────────────────────────────────────────
+n8n.aadd.rocks {
+	reverse_proxy localhost:5678
+}
+
+# ── Uptime Monitoring (Uptime Kuma) ───────────────────────────────────────
+status.aadd.rocks {
+	reverse_proxy localhost:3001
+}
+
+# ── Container Management (Portainer) ──────────────────────────────────────
+portainer.aadd.rocks {
+	reverse_proxy localhost:9000
+}
+
+# ── AI Gateway (pending: VCM subnet route via Tailscale) ──────────────────
+# VCM local IP: 10.1.30.14 — needs subnet route advertised by a Tailscale peer
+# Once routing is active, uncomment and add DNS record for ai.aadd.rocks
+# ai.aadd.rocks {
+# 	reverse_proxy 10.1.30.14:5000
+# }
