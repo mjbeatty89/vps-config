@@ -1,8 +1,62 @@
 # VPS Docker Stack - virtual-tunnel-vnic (147.224.179.179)
 # All services bind to 127.0.0.1 only; Caddy handles external TLS termination
-# Data persisted in /opt/docker/<service>
+#
+# n8n + postgres use named Docker volumes (avoids permission issues)
+# heimdall, uptime-kuma, portainer use bind mounts in /opt/docker/
+
+volumes:
+  n8n_storage:
+  db_storage:
 
 services:
+
+  # ── Database for n8n ──────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16
+    container_name: n8n-postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_NON_ROOT_USER=${POSTGRES_NON_ROOT_USER}
+      - POSTGRES_NON_ROOT_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD}
+    volumes:
+      - db_storage:/var/lib/postgresql/data
+      - ./n8n/init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h localhost -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ── Workflow Automation ────────────────────────────────────────────────────
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: n8n
+    restart: always
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+      - DB_POSTGRESDB_USER=${POSTGRES_NON_ROOT_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD}
+      - N8N_HOST=n8n.aadd.rocks
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://n8n.aadd.rocks/
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - TZ=America/Detroit
+    volumes:
+      - n8n_storage:/home/node/.n8n
+    ports:
+      - "127.0.0.1:5678:5678"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    links:
+      - postgres
 
   # ── Dashboard ─────────────────────────────────────────────────────────────
   heimdall:
@@ -16,24 +70,6 @@ services:
       - /opt/docker/heimdall:/config
     ports:
       - "127.0.0.1:8080:80"
-    restart: unless-stopped
-
-  # ── Workflow Automation ────────────────────────────────────────────────────
-  n8n:
-    image: docker.n8n.io/n8nio/n8n:latest
-    container_name: n8n
-    environment:
-      - N8N_HOST=n8n.aadd.rocks
-      - N8N_PORT=5678
-      - N8N_PROTOCOL=https
-      - WEBHOOK_URL=https://n8n.aadd.rocks/
-      - TZ=America/Detroit
-      # Uncomment to set a secure encryption key (required for credential storage):
-      # - N8N_ENCRYPTION_KEY=change_me_to_a_long_random_string
-    volumes:
-      - /opt/docker/n8n:/home/node/.n8n
-    ports:
-      - "127.0.0.1:5678:5678"
     restart: unless-stopped
 
   # ── Uptime Monitoring ──────────────────────────────────────────────────────
