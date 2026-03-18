@@ -92,3 +92,114 @@ services:
     ports:
       - "127.0.0.1:9000:9000"
     restart: unless-stopped
+
+  # ── Password Manager (Vaultwarden) ────────────────────────────────────────
+  # Always-on password vault — critical to keep running even if home is down
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      - DOMAIN=https://vault.aadd.rocks
+      - SIGNUPS_ALLOWED=false
+      - ADMIN_TOKEN=${VAULTWARDEN_ADMIN_TOKEN}
+      - TZ=America/Detroit
+    volumes:
+      - /opt/docker/vaultwarden:/data
+    ports:
+      - "127.0.0.1:8222:80"
+
+  # ── Push Notifications (NTFY) ─────────────────────────────────────────────
+  # Fire alerts to phone when home network / services go down (pair with Uptime Kuma)
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    container_name: ntfy
+    restart: unless-stopped
+    command: serve
+    environment:
+      - TZ=America/Detroit
+      - NTFY_BASE_URL=https://ntfy.aadd.rocks
+      - NTFY_CACHE_FILE=/var/cache/ntfy/cache.db
+      - NTFY_AUTH_FILE=/var/lib/ntfy/auth.db
+      - NTFY_AUTH_DEFAULT_ACCESS=deny-all
+      - NTFY_BEHIND_PROXY=true
+    volumes:
+      - /opt/docker/ntfy/cache:/var/cache/ntfy
+      - /opt/docker/ntfy/lib:/var/lib/ntfy
+    ports:
+      - "127.0.0.1:8095:80"
+
+  # ── Git Hosting (Gitea) ───────────────────────────────────────────────────
+  # Self-hosted code backup — stays up independently of home infra
+  gitea:
+    image: gitea/gitea:latest
+    container_name: gitea
+    restart: unless-stopped
+    environment:
+      - GITEA__server__DOMAIN=git.aadd.rocks
+      - GITEA__server__ROOT_URL=https://git.aadd.rocks
+      - GITEA__server__HTTP_PORT=3000
+      - GITEA__server__SSH_PORT=2222
+      - GITEA__server__SSH_LISTEN_PORT=22
+      - GITEA__database__DB_TYPE=sqlite3
+      - GITEA__security__INSTALL_LOCK=false
+      - TZ=America/Detroit
+    volumes:
+      - /opt/docker/gitea:/data
+    ports:
+      - "127.0.0.1:3000:3000"
+      - "0.0.0.0:2222:22"   # SSH clone — needs public exposure
+
+  # ── PDF Tools (Stirling PDF) ──────────────────────────────────────────────
+  # Browser-based PDF merge/split/compress — handy without home network
+  stirling-pdf:
+    image: frooodle/s-pdf:latest
+    container_name: stirling-pdf
+    restart: unless-stopped
+    environment:
+      - DOCKER_ENABLE_SECURITY=false
+      - TZ=America/Detroit
+    volumes:
+      - /opt/docker/stirling-pdf/trainingData:/usr/share/tessdata
+      - /opt/docker/stirling-pdf/configs:/configs
+    ports:
+      - "127.0.0.1:8083:8080"
+
+  # ── Quick Notes (Memos) ───────────────────────────────────────────────────
+  # Lightweight scratchpad / daily log, syncs to mobile
+  memos:
+    image: neosmemo/memos:stable
+    container_name: memos
+    restart: unless-stopped
+    environment:
+      - TZ=America/Detroit
+    volumes:
+      - /opt/docker/memos:/var/opt/memos
+    ports:
+      - "127.0.0.1:5230:5230"
+
+
+  op-connect-api:
+    image: 1password/connect-api:latest
+    container_name: op-connect-api
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8084:8080"
+    volumes:
+      - ./1password-credentials.json:/etc/1password/1password-credentials.json:ro
+      - /opt/docker/1password-connect:/home/opuser/.op/data
+    networks:
+      - default
+
+  op-connect-sync:
+    image: 1password/connect-sync:latest
+    container_name: op-connect-sync
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8085:8080"
+    volumes:
+      - ./1password-credentials.json:/etc/1password/1password-credentials.json:ro
+    depends_on:
+      - op-connect-api
+    networks:
+      - default
