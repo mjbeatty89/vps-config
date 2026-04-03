@@ -1,10 +1,12 @@
-ctrl-dPage_Down# Public Gateway - Caddy Reverse Proxy
-# Two-Box Architecture: this VPS proxies traffic to home-lab via Tailscale
+# Public Gateway - Caddy Reverse Proxy
+# Two-Box Architecture: VPS-LOCAL services only.
 # Host: virtual-tunnel-vnic | Public IP: 147.224.179.179 | Tailscale: 100.67.166.50
 #
-# DNS REQUIRED: Add A records in Cloudflare (DNS only, no proxy) pointing to 147.224.179.179
-#   dash.aadd.rocks, n8n.aadd.rocks, status.aadd.rocks, portainer.aadd.rocks
-#   ai.aadd.rocks (when VCM Tailscale subnet routing is configured)
+# RULE: Hardware-direct services (HA, Proxmox, TrueNAS, unRAID, Frigate, etc.)
+#       use Cloudflare Tunnel — they do NOT belong here.
+#
+# DNS: A records for all entries below → 147.224.179.179
+#      Use Cloudflare DNS-only (gray cloud) so Caddy handles TLS via ACME.
 
 # ── Dashboard (Heimdall) ───────────────────────────────────────────────────
 dash.aadd.rocks {
@@ -25,13 +27,6 @@ status.aadd.rocks {
 portainer.aadd.rocks {
 	reverse_proxy localhost:9000
 }
-
-# ── AI Gateway (pending: VCM subnet route via Tailscale) ──────────────────
-# VCM local IP: 10.1.30.14 — needs subnet route advertised by a Tailscale peer
-# Once routing is active, uncomment and add DNS record for ai.aadd.rocks
-ai.aadd.rocks {
- 	reverse_proxy 10.1.30.14:5000
-# }
 
 # ── Password Manager (Vaultwarden) ────────────────────────────────────────
 vault.aadd.rocks {
@@ -58,123 +53,9 @@ notes.aadd.rocks {
 	reverse_proxy localhost:5230
 }
 
-
-# ── Home Assistant ─────────────────────────────────────────────────────────
-ha.aadd.rocks {
-	reverse_proxy https://10.1.30.10:8123 {
-		transport http {
-			tls_insecure_skip_verify
-		}
-	}
-}
-
-# ── Unraid ─────────────────────────────────────────────────────────────────
-un.aadd.rocks {
-	reverse_proxy https://10.1.30.16 {
-		transport http {
-			tls_insecure_skip_verify
-		}
-	}
-}
-
-# ── Proxmox VE ─────────────────────────────────────────────────────────────
-pve.aadd.rocks {
-	reverse_proxy https://10.1.30.27:8006 {
-		transport http {
-			tls_insecure_skip_verify
-		}
-	}
-}
-
-# ── Proxmox Backup Server ──────────────────────────────────────────────────
-pbs.aadd.rocks {
-	reverse_proxy https://10.1.30.14:8007 {
-		transport http {
-			tls_insecure_skip_verify
-		}
-	}
-}
-
-# ── NAS ────────────────────────────────────────────────────────────────────
-nas.aadd.rocks {
-	reverse_proxy https://10.1.31.70 {
-		transport http {
-			tls_insecure_skip_verify
-		}
-	}
-}
-
-# ── Bamboo ─────────────────────────────────────────────────────────────────
-bamboo.aadd.rocks {
-	reverse_proxy https://10.1.30.16:3005 {
-		transport http {
-			tls_insecure_skip_verify
-		}
-	}
-}
-
-# ── AgentGPT / Reworkd ─────────────────────────────────────────────────────
-ag.aadd.rocks {
-	reverse_proxy https://10.1.30.16:3000 {
-		transport http {
-			tls_insecure_skip_verify
-		}
-	}
-}
-
-# ── Tipi ───────────────────────────────────────────────────────────────────
-tipi.aadd.rocks {
-	reverse_proxy https://10.1.30.178 {
-		transport http {
-			tls_insecure_skip_verify
-		}
-	}
-}
-
-# ── Proxmox Data ───────────────────────────────────────────────────────────
-pxmxdata.aadd.rocks {
-	reverse_proxy https://10.1.30.85 {
-		transport http {
-			tls_insecure_skip_verify
-		}
-	}
-}
-
-pve-vcm.aadd.rocks {
-	reverse_proxy https://10.1.30.14 {
-		transport http {
-			tls_insecure_skip_verify
-		}
-	}
-ha.aadd.rocks {
-	reverse_proxy https://10.1.30.10 {
-		transport http {
-			tls_insecure_skip_verify
-		}
-	}
-}
-
-nextcloud
-
-owncloud
-
-diyhue
-
-photoprism
-
-adguard
-10.1.13.16
-
-prox-data-man
-
-prox-scripts
-10.1.31.152
-
-gitea-backup
-
-lldap
-
-komodo
-
-syncth
-
+# ── AI Gateway (VPS → Tailscale → VCM) ────────────────────────────────────
+# Uncomment once Tailscale subnet route for VCM (10.1.30.14) is advertising.
+# Also add A record: ai.aadd.rocks → 147.224.179.179 (gray cloud)
+# ai.aadd.rocks {
+# 	reverse_proxy 10.1.30.14:5000
+# }
