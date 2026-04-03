@@ -69,3 +69,10 @@ resume.aadd.rocks {
 storage-resume.aadd.rocks {
 	reverse_proxy cash.manee-frog.ts.net:9000
 }
+
+# ── Personal Website (matt.aadd.rocks) ──────────────────────────────────
+matt.aadd.rocks {
+	root * /home/mjb/www/matt
+	file_server
+	encode gzip
+}
