@@ -1,0 +1,10 @@
+[Unit]
+Description=VPS GitOps deploy from vps-config repo
+After=network.target
+
+[Service]
+Type=oneshot
+User=mjb
+ExecStart=/home/mjb/deploy-vps.sh
+StandardOutput=journal
+StandardError=journal
