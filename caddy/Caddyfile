@@ -59,3 +59,13 @@ notes.aadd.rocks {
 # ai.aadd.rocks {
 # 	reverse_proxy 10.1.30.14:5000
 # }
+
+# ── Resume Builder (Rx Resume → cash via Tailscale) ───────────────────────
+resume.aadd.rocks {
+	reverse_proxy cash.manee-frog.ts.net:3500
+}
+
+# ── Resume Storage (MinIO → cash via Tailscale) ───────────────────────────
+storage-resume.aadd.rocks {
+	reverse_proxy cash.manee-frog.ts.net:9000
+}
