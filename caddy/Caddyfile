@@ -79,7 +79,7 @@ matt.aadd.rocks {
 
 # ── Obsidian (KasmVNC desktop → cash via Tailscale) ───────────────────────
 obsidian.aadd.rocks {
-	basicauth {
+	basic_auth {
 		mjb $2a$14$OkCnqaT/Jh8qB3OpShwp5uAm/5jJuG8sQI0ONXsgSinNMMpugCEZu
 	}
 	reverse_proxy cash.manee-frog.ts.net:3002
@@ -87,7 +87,7 @@ obsidian.aadd.rocks {
 
 # ── Proposal (shareable Obsidian access → cash via Tailscale) ─────────────
 proposal.aadd.rocks {
-	basicauth {
+	basic_auth {
 		share $2a$14$lxHryk8BXXC0gLBEVnIV5edqNGlq4SHRKE/SUcssRUQE4u17Ra.VG
 	}
 	reverse_proxy cash.manee-frog.ts.net:3002
