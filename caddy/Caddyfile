@@ -92,3 +92,8 @@ proposal.aadd.rocks {
 	}
 	reverse_proxy cash.manee-frog.ts.net:3002
 }
+
+# ── Obsidian LiveSync (CouchDB → cash via Tailscale) ──────────────────────
+sync.aadd.rocks {
+	reverse_proxy cash.manee-frog.ts.net:5984
+}
