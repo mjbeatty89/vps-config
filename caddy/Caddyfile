@@ -97,3 +97,8 @@ proposal.aadd.rocks {
 sync.aadd.rocks {
 	reverse_proxy cash.manee-frog.ts.net:5984
 }
+
+# ── Photo Recovery Browser (PhotoPrism → ai-server via Tailscale) ──────────
+photoprism.aadd.rocks {
+	reverse_proxy ai-server.manee-frog.ts.net:2342
+}
