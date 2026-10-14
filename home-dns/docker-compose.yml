@@ -1,0 +1,33 @@
+# Home DNS node (Raspberry Pi 4) — AdGuard Home + Unbound
+#
+# Architecture:
+#   LAN clients ──53──> AdGuard Home (filtering, blocklists, DHCP optional)
+#                          └── 5335 ──> Unbound (local recursive resolver, DNSSEC)
+#
+# Host networking is required so AdGuard can own port 53 and reach Unbound on 127.0.0.1:5335.
+# Deploy:  docker compose up -d   (run as root / sudo)
+name: home-dns
+
+services:
+
+  unbound:
+    image: klutchell/unbound:latest
+    container_name: unbound
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./unbound/unbound.conf:/opt/unbound/etc/unbound/unbound.conf:ro
+    # Listens on 127.0.0.1:5335 only (see unbound.conf)
+
+  adguardhome:
+    image: adguard/adguardhome:latest
+    container_name: adguardhome
+    restart: unless-stopped
+    network_mode: host
+    depends_on:
+      - unbound
+    volumes:
+      - ./adguard/work:/opt/adguardhome/work
+      - ./adguard/conf:/opt/adguardhome/conf
+    # Web UI (initial setup): http://<pi-ip>:3000
+    # DNS: 53/tcp+udp   Optional DHCP: 67/udp   DoH/DoT/DoQ as configured
