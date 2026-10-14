@@ -4,3 +4,5 @@
 secrets/
 .env
 1password-credentials.json
+*.bak
+*.bak.*

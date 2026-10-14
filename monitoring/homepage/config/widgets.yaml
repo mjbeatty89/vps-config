@@ -1,0 +1,15 @@
+- resources:
+    label: VPS
+    cpu: true
+    memory: true
+    disk: /
+    cpus: true
+    uptime: true
+- search:
+    provider: google
+    target: _blank
+- datetime:
+    text_size: xl
+    format:
+      dateStyle: long
+      timeStyle: short

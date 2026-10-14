@@ -1,3 +1,9 @@
+{
+	admin localhost:2019 {
+		origins 127.0.0.1:2019 localhost:2019 oracle.manee-frog.ts.net:2019
+	}
+}
+
 # Public Gateway - Caddy Reverse Proxy
 # Two-Box Architecture: VPS-LOCAL services only.
 # Host: virtual-tunnel-vnic | Public IP: 147.224.179.179 | Tailscale: 100.67.166.50
@@ -102,3 +108,34 @@ sync.aadd.rocks {
 photoprism.aadd.rocks {
 	reverse_proxy ai-server.manee-frog.ts.net:2342
 }
+
+# ── MCP Gateway (homelab-mcp on cashbox via Tailscale) ────────────────────────
+mcp.aadd.rocks {
+    basic_auth {
+        mjb $2a$14$oXPP7lv3u1VA3VTDeRbqmOPIr6es/1EqerbfQT7pLGTSKwADO1KOm
+    }
+    reverse_proxy cash.manee-frog.ts.net:8765
+}
+
+# ── Monitoring: Grafana (metrics dashboards) ──────────────────────────────
+# Grafana has its own login; no extra basic_auth so probes/health checks work.
+grafana.aadd.rocks {
+	reverse_proxy localhost:3002
+}
+
+# ── Monitoring: Homepage (service dashboard) ──────────────────────────────
+home.aadd.rocks {
+	basic_auth {
+		mjb $2a$14$akiGKTQoIpVb6bixFQrLT.cOd8.KJKHZdbtfM.sZXYPtzUK249pSi
+	}
+	reverse_proxy localhost:3010
+}
+
+# ── Monitoring: Netdata (host + container metrics) ────────────────────────
+netdata.aadd.rocks {
+	basic_auth {
+		mjb $2a$14$akiGKTQoIpVb6bixFQrLT.cOd8.KJKHZdbtfM.sZXYPtzUK249pSi
+	}
+	reverse_proxy localhost:19999
+}
+

@@ -1,0 +1,2 @@
+vps:
+  socket: /var/run/docker.sock

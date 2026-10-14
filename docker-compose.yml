@@ -184,9 +184,12 @@ services:
     container_name: op-connect-api
     restart: unless-stopped
     ports:
-      - "127.0.0.1:8084:8080"
+      - "100.67.166.50:8084:8080"
     volumes:
       - ./1password-credentials.json:/etc/1password/1password-credentials.json:ro
+      - ./1password-credentials.json:/home/opuser/.op/1password-credentials.json:ro
+      - /opt/docker/1password-connect:/home/opuser/.op/data
+      - ./1password-credentials.json:/home/opuser/.op/1password-credentials.json:ro
       - /opt/docker/1password-connect:/home/opuser/.op/data
     networks:
       - default
@@ -199,6 +202,8 @@ services:
       - "127.0.0.1:8085:8080"
     volumes:
       - ./1password-credentials.json:/etc/1password/1password-credentials.json:ro
+      - ./1password-credentials.json:/home/opuser/.op/1password-credentials.json:ro
+      - /opt/docker/1password-connect:/home/opuser/.op/data
     depends_on:
       - op-connect-api
     networks:

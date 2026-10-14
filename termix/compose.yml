@@ -1,0 +1,37 @@
+# Termix 2.9.2, pinned to the image digest for release commit 2b309e9.
+services:
+  termix:
+    image: ghcr.io/lukegus/termix@sha256:d64c841a560c54aa7c27b0e6bbd2fbf8b51073565040d2a6bfbc127f0a72cf1e
+    container_name: termix
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8086:8080"
+    environment:
+      PORT: "8080"
+      PUID: "15000"
+      PGID: "15000"
+      TERMIX_REQUIRE_EXTERNAL_SECRETS: "true"
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+      DATABASE_KEY_FILE: /run/secrets/database_key
+      ENCRYPTION_KEY_FILE: /run/secrets/encryption_key
+      INTERNAL_AUTH_TOKEN_FILE: /run/secrets/internal_auth_token
+    volumes:
+      - termix_data:/app/data
+    secrets:
+      - jwt_secret
+      - database_key
+      - encryption_key
+      - internal_auth_token
+
+volumes:
+  termix_data:
+
+secrets:
+  jwt_secret:
+    file: /etc/termix/secrets/JWT_SECRET
+  database_key:
+    file: /etc/termix/secrets/DATABASE_KEY
+  encryption_key:
+    file: /etc/termix/secrets/ENCRYPTION_KEY
+  internal_auth_token:
+    file: /etc/termix/secrets/INTERNAL_AUTH_TOKEN

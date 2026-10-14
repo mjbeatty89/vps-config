@@ -1,0 +1,18 @@
+[Unit]
+Description=watchman — VPS monitoring agent (Prometheus + Telegram)
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=simple
+User=mjb
+Group=mjb
+EnvironmentFile=/opt/watchman/watchman.env
+ExecStart=/usr/bin/python3 /opt/watchman/watchman.py
+Restart=always
+RestartSec=10
+StateDirectory=watchman
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,79 @@
+global:
+  scrape_interval: 30s
+  scrape_timeout: 10s
+  evaluation_interval: 30s
+  external_labels:
+    host: oracle-vps
+    site: aadd
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # Host metrics for the VPS (via node_exporter sidecar)
+  - job_name: node
+    static_configs:
+      - targets: ["node-exporter:9100"]
+
+  # Per-container metrics
+  - job_name: cadvisor
+    static_configs:
+      - targets: ["cadvisor:8080"]
+
+  # UniFi controller (starts reporting once unpoller runs with --profile unifi)
+  - job_name: unpoller
+    static_configs:
+      - targets: ["unpoller:9130"]
+
+  # ── Blackbox: HTTP probes of public Caddy vhosts ──────────────────────────
+  - job_name: blackbox-http
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          # VPS-hosted services behind Caddy
+          - https://dash.aadd.rocks
+          - https://n8n.aadd.rocks
+          - https://status.aadd.rocks
+          - https://portainer.aadd.rocks
+          - https://vault.aadd.rocks
+          - https://ntfy.aadd.rocks
+          - https://git.aadd.rocks
+          - https://pdf.aadd.rocks
+          - https://notes.aadd.rocks
+          - https://matt.aadd.rocks
+          - https://grafana.aadd.rocks
+          # Home services reached over Tailscale
+          - https://resume.aadd.rocks
+          - https://storage-resume.aadd.rocks
+          - https://photoprism.aadd.rocks
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  # ── Blackbox: ICMP ping of tailnet nodes ──────────────────────────────────
+  - job_name: blackbox-icmp
+    metrics_path: /probe
+    params:
+      module: [icmp]
+    static_configs:
+      - targets:
+          - oracle.manee-frog.ts.net     # this VPS
+          - ha.manee-frog.ts.net
+          - ai-server.manee-frog.ts.net
+          - cash.manee-frog.ts.net
+          - hapios.manee-frog.ts.net
+          - un.manee-frog.ts.net
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115

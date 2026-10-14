@@ -1,0 +1,18 @@
+title: AADD VPS
+theme: dark
+color: slate
+headerStyle: boxed
+target: _blank
+layout:
+  Gateway:
+    style: row
+    columns: 4
+  Monitoring:
+    style: row
+    columns: 4
+  Apps:
+    style: row
+    columns: 4
+  Home (over Tailscale):
+    style: row
+    columns: 4
