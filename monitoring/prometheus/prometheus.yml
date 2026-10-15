@@ -45,8 +45,7 @@ scrape_configs:
           - https://notes.aadd.rocks
           - https://matt.aadd.rocks
           # Home services reached over Tailscale
-          - https://resume.aadd.rocks
-          - https://storage-resume.aadd.rocks
+  # (resume.aadd.rocks / storage-resume.aadd.rocks removed 2026-10-15 - stale cash routes)
           - https://photoprism.aadd.rocks
     relabel_configs:
       - source_labels: [__address__]

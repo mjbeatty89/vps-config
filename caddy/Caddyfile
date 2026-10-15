@@ -66,15 +66,10 @@ notes.aadd.rocks {
 # 	reverse_proxy 10.1.30.14:5000
 # }
 
-# ── Resume Builder (Rx Resume → cash via Tailscale) ───────────────────────
-resume.aadd.rocks {
-	reverse_proxy cash.manee-frog.ts.net:3500
-}
-
-# ── Resume Storage (MinIO → cash via Tailscale) ───────────────────────────
-storage-resume.aadd.rocks {
-	reverse_proxy cash.manee-frog.ts.net:9000
-}
+# ── Resume Builder / Storage / Obsidian LiveSync ──────────────────────────
+# Removed 2026-10-15: routes pointed at cash:3500 / cash:9000 / cash:5984,
+# which have never had listeners (dead since ~Sep 2026). Recover from git
+# history if Rx Resume / MinIO / CouchDB are redeployed on cash.
 
 # ── Personal Website (matt.aadd.rocks) ──────────────────────────────────
 matt.aadd.rocks {
@@ -97,11 +92,6 @@ proposal.aadd.rocks {
 		share $2a$14$lxHryk8BXXC0gLBEVnIV5edqNGlq4SHRKE/SUcssRUQE4u17Ra.VG
 	}
 	reverse_proxy cash.manee-frog.ts.net:3002
-}
-
-# ── Obsidian LiveSync (CouchDB → cash via Tailscale) ──────────────────────
-sync.aadd.rocks {
-	reverse_proxy cash.manee-frog.ts.net:5984
 }
 
 # ── Photo Recovery Browser (PhotoPrism → ai-server via Tailscale) ──────────

@@ -127,13 +127,6 @@
         container: heimdall
 
 - Home (over Tailscale):
-    - Resume Builder:
-        icon: resume
-        description: cash:3500
-        href: https://resume.aadd.rocks
-        widget:
-          type: siteMonitor
-          url: https://resume.aadd.rocks
     - PhotoPrism:
         icon: photoprism
         description: ai-server:2342
