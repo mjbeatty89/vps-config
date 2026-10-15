@@ -78,33 +78,20 @@ matt.aadd.rocks {
 	encode gzip
 }
 
-# ── Obsidian (KasmVNC desktop → cash via Tailscale) ───────────────────────
-obsidian.aadd.rocks {
-	basic_auth {
-		mjb $2a$14$OkCnqaT/Jh8qB3OpShwp5uAm/5jJuG8sQI0ONXsgSinNMMpugCEZu
-	}
-	reverse_proxy cash.manee-frog.ts.net:3002
-}
-
-# ── Proposal (shareable Obsidian access → cash via Tailscale) ─────────────
-proposal.aadd.rocks {
-	basic_auth {
-		share $2a$14$lxHryk8BXXC0gLBEVnIV5edqNGlq4SHRKE/SUcssRUQE4u17Ra.VG
-	}
-	reverse_proxy cash.manee-frog.ts.net:3002
-}
+# ── Obsidian / Proposal ────────────────────────────────────────────────────
+# Removed 2026-10-15: both proxied cash:3002 (KasmVNC), which has no listener.
 
 # ── Photo Recovery Browser (PhotoPrism → ai-server via Tailscale) ──────────
 photoprism.aadd.rocks {
 	reverse_proxy ai-server.manee-frog.ts.net:2342
 }
 
-# ── MCP Gateway (homelab-mcp on cashbox via Tailscale) ────────────────────────
+# ── MCP Gateway (cash-mcp via Tailscale) ──────────────────────────────────────
 mcp.aadd.rocks {
     basic_auth {
         mjb $2a$14$oXPP7lv3u1VA3VTDeRbqmOPIr6es/1EqerbfQT7pLGTSKwADO1KOm
     }
-    reverse_proxy cash.manee-frog.ts.net:8765
+    reverse_proxy https://cash.manee-frog.ts.net:8443
 }
 
 # ── Monitoring UIs are TAILNET-ONLY (not exposed publicly) ────────────────

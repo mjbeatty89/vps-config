@@ -25,6 +25,9 @@ CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
 POLL_SECONDS = int(os.environ.get("WATCHMAN_POLL_SECONDS", "60"))
 STATE_FILE = os.environ.get("WATCHMAN_STATE", "/var/lib/watchman/state.json")
 REALERT_SECONDS = int(os.environ.get("WATCHMAN_REALERT_SECONDS", str(6 * 3600)))
+# When false, watchman only SENDS alerts (no getUpdates polling), so it can share
+# a bot token with another agent that owns the polling loop.
+POLL_TELEGRAM = os.environ.get("WATCHMAN_POLL_TELEGRAM", "true").lower() in ("1", "true", "yes", "on")
 
 
 # ── helpers ────────────────────────────────────────────────────────────────
@@ -183,14 +186,17 @@ def poll_telegram(offset: int | None) -> int | None:
 
 
 def main() -> None:
-    log(f"watchman starting (prom={PROM}, chat={'set' if CHAT_ID else 'unset'})")
+    log(f"watchman starting (prom={PROM}, chat={'set' if CHAT_ID else 'unset'}, poll={POLL_TELEGRAM})")
     state = load_state()
     if CHAT_ID:
         send("🛡️ watchman online.")
     offset: int | None = None
     last_check = 0.0
     while True:
-        offset = poll_telegram(offset)  # blocks up to ~25s
+        if POLL_TELEGRAM:
+            offset = poll_telegram(offset)  # blocks up to ~25s
+        else:
+            time.sleep(5)
         if time.time() - last_check >= POLL_SECONDS:
             try:
                 check_cycle(state)

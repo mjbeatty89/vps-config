@@ -8,6 +8,6 @@ contactPoints:
         type: telegram
         disableResolveMessage: false
         settings:
-          bottoken: $__env{TELEGRAM_BOT_TOKEN}
-          chatid: $__env{TELEGRAM_CHAT_ID}
+          bottoken: "$__env{TELEGRAM_BOT_TOKEN}"
+          chatid: "7831343310"
         secureSettings: {}

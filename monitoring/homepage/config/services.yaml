@@ -138,14 +138,7 @@
         icon: home-assistant
         description: via Tailscale
         href: https://ha.manee-frog.ts.net
-    - Obsidian:
-        icon: obsidian
-        description: cash KasmVNC
-        href: https://obsidian.aadd.rocks
-        widget:
-          type: siteMonitor
-          url: https://obsidian.aadd.rocks
     - MCP Gateway:
         icon: mcp
-        description: cashbox:8765
+        description: cash-mcp :8443
         href: https://mcp.aadd.rocks
