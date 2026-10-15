@@ -117,25 +117,11 @@ mcp.aadd.rocks {
     reverse_proxy cash.manee-frog.ts.net:8765
 }
 
-# ── Monitoring: Grafana (metrics dashboards) ──────────────────────────────
-# Grafana has its own login; no extra basic_auth so probes/health checks work.
-grafana.aadd.rocks {
-	reverse_proxy localhost:3002
-}
-
-# ── Monitoring: Homepage (service dashboard) ──────────────────────────────
-home.aadd.rocks {
-	basic_auth {
-		mjb $2a$14$akiGKTQoIpVb6bixFQrLT.cOd8.KJKHZdbtfM.sZXYPtzUK249pSi
-	}
-	reverse_proxy localhost:3010
-}
-
-# ── Monitoring: Netdata (host + container metrics) ────────────────────────
-netdata.aadd.rocks {
-	basic_auth {
-		mjb $2a$14$akiGKTQoIpVb6bixFQrLT.cOd8.KJKHZdbtfM.sZXYPtzUK249pSi
-	}
-	reverse_proxy localhost:19999
-}
+# ── Monitoring UIs are TAILNET-ONLY (not exposed publicly) ────────────────
+# Served via `tailscale serve` from the oracle node:
+#   Grafana     https://oracle.manee-frog.ts.net:3002
+#   Homepage    https://oracle.manee-frog.ts.net:3010
+#   Prometheus  https://oracle.manee-frog.ts.net:9090
+#   Netdata     https://oracle.manee-frog.ts.net:19999
+# To publish any of these publicly later, add a Caddy site block here.
 

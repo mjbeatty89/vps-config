@@ -25,29 +25,29 @@
 - Monitoring:
     - Grafana:
         icon: grafana
-        description: Dashboards
-        href: https://grafana.aadd.rocks
+        description: Dashboards (tailnet)
+        href: https://oracle.manee-frog.ts.net:3002
         widget:
           type: siteMonitor
-          url: https://grafana.aadd.rocks
+          url: http://grafana:3000/login
     - Prometheus:
         icon: prometheus
-        description: Metrics
-        href: https://prometheus.aadd.rocks
+        description: Metrics (tailnet)
+        href: https://oracle.manee-frog.ts.net:9090
         widget:
           type: siteMonitor
-          url: https://prometheus.aadd.rocks
+          url: http://prometheus:9090/-/ready
     - Netdata:
         icon: netdata
-        description: Host + container metrics
-        href: https://netdata.aadd.rocks
+        description: Host + container metrics (tailnet)
+        href: https://oracle.manee-frog.ts.net:19999
         widget:
           type: siteMonitor
-          url: https://netdata.aadd.rocks
-    - Uptime Kuma (local):
+          url: https://oracle.manee-frog.ts.net:19999
+    - Uptime Kuma (tailnet):
         icon: uptime-kuma
         description: Kuma direct
-        href: http://100.67.166.50:3001
+        href: https://oracle.manee-frog.ts.net:3001
 
 - Apps:
     - n8n:

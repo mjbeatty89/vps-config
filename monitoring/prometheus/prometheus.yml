@@ -44,11 +44,28 @@ scrape_configs:
           - https://pdf.aadd.rocks
           - https://notes.aadd.rocks
           - https://matt.aadd.rocks
-          - https://grafana.aadd.rocks
           # Home services reached over Tailscale
           - https://resume.aadd.rocks
           - https://storage-resume.aadd.rocks
           - https://photoprism.aadd.rocks
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  # ── Blackbox: internal monitoring health (container DNS, no public DNS) ───
+  - job_name: blackbox-internal
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - http://prometheus:9090/-/ready
+          - http://grafana:3000/login
+          - http://homepage:3000
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target

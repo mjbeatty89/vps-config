@@ -48,15 +48,18 @@ echo "==> restarting Grafana"
 cd "$HERE"
 docker compose up -d grafana >/dev/null
 
+echo "==> configuring Uptime Kuma Telegram notification"
+docker stop uptime-kuma >/dev/null
+sudo cp -p /opt/docker/uptime-kuma/kuma.db "/opt/docker/uptime-kuma/kuma.db.pre-telegram-$(date +%Y%m%d-%H%M%S)"
+sudo TELEGRAM_BOT_API="$TOKEN" TELEGRAM_CHAT_ID="$CHAT_ID" python3 "$HERE/kuma-telegram.py"
+docker start uptime-kuma >/dev/null
+
 echo "==> test message"
 curl -s --max-time 15 "https://api.telegram.org/bot${TOKEN}/sendMessage" \
   --data-urlencode "chat_id=${CHAT_ID}" \
-  --data-urlencode "text=✅ aadd VPS alerts wired (Netdata + Grafana). Kuma can now use the same chat." \
+  --data-urlencode "text=✅ aadd VPS alerts wired (Netdata + Grafana + Uptime Kuma)." \
   | python3 -c 'import sys,json;d=json.load(sys.stdin);print("  sent" if d.get("ok") else "  FAILED: "+str(d))'
 
-cat <<'DONE'
+echo
+echo "Done. Netdata, Grafana and all Kuma monitors now notify this chat."
 
-Done. Remaining Telegram surfaces to point at the same chat id:
-  * Uptime Kuma  → Settings ▸ Notifications ▸ New ▸ Telegram  (bot token + chat id),
-                   then set it as the default notification.
-DONE
