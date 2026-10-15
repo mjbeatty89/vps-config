@@ -1,9 +1,40 @@
 #!/bin/bash
-# GitOps deploy: pull vps-config and apply Caddy changes
-set -e
-cd /home/mjb/projects/vps-config
-git pull origin main
-sudo cp caddy/Caddyfile /etc/caddy/Caddyfile
-sudo caddy validate --config /etc/caddy/Caddyfile
+# GitOps deploy for the VPS gateway.
+# Applied by vps-deploy.timer every 5 minutes (User=mjb, passwordless sudo).
+# Pulls vps-config and reconciles: Caddy, the monitoring stack, and watchman.
+set -euo pipefail
+
+REPO="/home/mjb/projects/vps-config"
+LOG="/home/mjb/deploy.log"
+cd "$REPO"
+
+trap 'echo "[$(date)] deploy FAILED at line $LINENO" >> "$LOG"' ERR
+
+# ── Pull latest config ─────────────────────────────────────────────────────
+git pull --ff-only origin main
+
+# ── Caddy (config is symlinked from /etc/caddy/Caddyfile -> repo) ──────────
+sudo caddy validate --config "$REPO/caddy/Caddyfile" --adapter caddyfile >/dev/null
 sudo systemctl reload caddy
-echo "[$(date)] deploy ok" >> /home/mjb/deploy.log
+
+# ── Monitoring stack ───────────────────────────────────────────────────────
+if [ -f "$REPO/monitoring/docker-compose.yml" ]; then
+  ( cd "$REPO/monitoring" && docker compose --env-file .env up -d --remove-orphans )
+  # reload Prometheus config in place (no container restart)
+  curl -sf -X POST http://127.0.0.1:9090/-/reload >/dev/null 2>&1 || true
+fi
+
+# ── watchman agent (reconcile only when files change) ──────────────────────
+if [ -f "$REPO/monitoring/watchman/watchman.py" ]; then
+  changed=0
+  if ! cmp -s "$REPO/monitoring/watchman/watchman.py" /opt/watchman/watchman.py; then
+    sudo install -m 0755 "$REPO/monitoring/watchman/watchman.py" /opt/watchman/watchman.py; changed=1
+  fi
+  if ! cmp -s "$REPO/monitoring/watchman/watchman.service" /etc/systemd/system/watchman.service; then
+    sudo install -m 0644 "$REPO/monitoring/watchman/watchman.service" /etc/systemd/system/watchman.service
+    sudo systemctl daemon-reload; changed=1
+  fi
+  [ "$changed" = 1 ] && sudo systemctl restart watchman || true
+fi
+
+echo "[$(date)] deploy ok" >> "$LOG"
