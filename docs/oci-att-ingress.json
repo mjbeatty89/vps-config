@@ -1,0 +1,12 @@
+[
+  {
+    "source": "108.254.162.160/32",
+    "sourceType": "CIDR_BLOCK",
+    "protocol": "17",
+    "isStateless": false,
+    "description": "ATT fiber syslog (UDP 5141)",
+    "udpOptions": {
+      "destinationPortRange": { "min": 5141, "max": 5141 }
+    }
+  }
+]

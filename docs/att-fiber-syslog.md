@@ -22,11 +22,15 @@ AT&T gateway ──syslog/UDP 5141──> 147.224.179.179 (OCI) ──> host ipt
 The VCN security list (or the NSG on the VNIC, if one is attached) must allow the
 inbound packet, otherwise it is dropped before it reaches the host. The instance's
 *instance principal* is **not authorised** for `virtual-network-family`
-(`NotAuthorizedOrNotFound`), so this needs the OCI console / a principal with
-network rights.
+(`NotAuthorizedOrNotFound` on `iam compartment list`, `network vcn list`,
+`network security-list list`), and there are **no OCI credentials on the box**, so
+this must be applied by a principal with network rights.
 
-**Console:** Networking ▸ Virtual Cloud Networks ▸ *(VCN)* ▸ Security Lists ▸
-*(the subnet's list for `10.0.0.0/24`)* ▸ Add Ingress Rule:
+### Option A — OCI Console (fastest, ~30 s)
+
+Networking ▸ Virtual Cloud Networks ▸ *(VCN)* ▸ Security Lists ▸ *(the subnet's
+list for `10.0.0.0/24`)* ▸ **Add Ingress Rules**, then paste the rule from
+[`oci-att-ingress.json`](./oci-att-ingress.json):
 
 - Source Type: **CIDR Block**
 - Source CIDR: **108.254.162.160/32**
@@ -35,29 +39,34 @@ network rights.
 - Stateless: **No**
 - Description: `ATT fiber syslog`
 
-Equivalent rule object:
+If the VNIC is in a Network Security Group instead, add the equivalent rule to
+that **NSG**.
 
-```yaml
-source: 108.254.162.160/32
-sourceType: CIDR_BLOCK
-protocol: "17"          # UDP
-isStateless: false
-description: ATT fiber syslog (UDP 5141)
-udpOptions:
-  destinationPortRange: { min: 5141, max: 5141 }
-```
-
-Or via OCI CLI (Cloud Shell, using your own creds):
+### Option B — OCI CLI (Cloud Shell / your laptop, with your creds)
 
 ```bash
-oci network security-list list --compartment-id "$TENANCY" --vcn-id "$VCN"
-# append the rule above to the existing ingress rules and update:
-oci network security-list update --security-list-id "$SL_ID" \
-  --ingress-security-rules file:///tmp/sl-ingress.json
+TENANCY=ocid1.tenancy.oc1..aaaa...
+SL=ocid1.securitylist.oc1.us-chicago-1.aaaa...   # the subnet's security list
+# 1) fetch current rules, 2) append docs/oci-att-ingress.json, 3) update:
+oci network security-list get --security-list-id "$SL" > /tmp/sl.json
+jq -s '.[0].data."ingress-security-rules" + .[1]' /tmp/sl.json docs/oci-att-ingress.json > /tmp/merged.json
+oci network security-list update --security-list-id "$SL" \
+  --ingress-security-rules file:///tmp/merged.json
 ```
 
-> If the VNIC is in a Network Security Group, update the **NSG** instead:
-> `oci network nsg rules add --nsg-id "$NSG" --security-rules file:///tmp/nsg.json`
+### Option C — let the VPS manage it (enables IP auto-update)
+
+Add the instance to a dynamic group and grant it network rights, then I can wire a
+DDNS updater that keeps the rule correct when AT&T rotates your IP:
+
+```
+# dynamic group
+All { instance.id = 'ocid1.instance.oc1.us-chicago-1.anxxeljsnf6673icwi4oijq4djt7ctq62legtvyn67xu6caoxrr5pruruvfq' }
+
+# policy (in the compartment that owns the VCN)
+Allow dynamic-group <dg-name> to manage security-lists in compartment <compartment>
+Allow dynamic-group <dg-name> to read virtual-network-family in compartment <compartment>
+```
 
 ### ⚠️ Caveat: the residential IP changes
 
