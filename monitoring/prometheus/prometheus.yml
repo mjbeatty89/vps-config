@@ -26,6 +26,15 @@ scrape_configs:
     static_configs:
       - targets: ["unpoller:9130"]
 
+  # ── Raspberry Pi nodes (file-based service discovery) ─────────────────────
+  - job_name: pi-node
+    file_sd_configs:
+      - files: ["/etc/prometheus/targets/nodes.yml"]
+
+  - job_name: pi-cadvisor
+    file_sd_configs:
+      - files: ["/etc/prometheus/targets/cadvisor.yml"]
+
   # ── Blackbox: HTTP probes of public Caddy vhosts ──────────────────────────
   - job_name: blackbox-http
     metrics_path: /probe

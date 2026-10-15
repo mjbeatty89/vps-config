@@ -1,0 +1,7 @@
+# Prometheus file_sd targets: cadvisor on the Pi nodes (job: pi-cadvisor)
+- targets:
+    - "pi-dns.manee-frog.ts.net:8080"
+    - "pi-docker.manee-frog.ts.net:8080"
+  labels:
+    site: home
+    role: pi

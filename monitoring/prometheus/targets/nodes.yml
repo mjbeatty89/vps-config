@@ -1,0 +1,8 @@
+# Prometheus file_sd targets: node-exporter on the Pi nodes (job: pi-node)
+# MagicDNS names resolve over the tailnet. Edit + `curl -X POST :9090/-/reload`.
+- targets:
+    - "pi-dns.manee-frog.ts.net:9100"
+    - "pi-docker.manee-frog.ts.net:9100"
+  labels:
+    site: home
+    role: pi

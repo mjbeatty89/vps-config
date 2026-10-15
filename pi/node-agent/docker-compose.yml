@@ -1,0 +1,40 @@
+# Node agents (node-exporter + cadvisor) — run on every Pi node
+#
+# Gives the VPS Prometheus host + container metrics for the node.
+# node-exporter uses host networking (binds 0.0.0.0:9100, reachable over the tailnet).
+# cadvisor publishes 8080 so it is scrapeable over the tailnet.
+#
+# Run:  sudo docker compose up -d
+name: node-agent
+
+services:
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    network_mode: host
+    pid: host
+    command:
+      - --path.rootfs=/host
+      - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc|var/lib/docker/.+)($|/)
+    volumes:
+      - /:/host:ro,rslave
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    restart: unless-stopped
+    privileged: true
+    command:
+      - --docker_only=true
+      - --housekeeping_interval=30s
+    devices:
+      - /dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    ports:
+      - "0.0.0.0:8080:8080"

@@ -24,6 +24,7 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./prometheus/rules:/etc/prometheus/rules:ro
+      - ./prometheus/targets:/etc/prometheus/targets:ro
       - /opt/docker/monitoring/prometheus/data:/prometheus
     ports:
       - "127.0.0.1:9090:9090"

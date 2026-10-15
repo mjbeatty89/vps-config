@@ -93,3 +93,5 @@ dig @<pi-ip> doubleclick.net                     # expect 0.0.0.0 / NXDOMAIN
   Back that file up (e.g. into `vps-config`, which is already a git repo — but it
   contains no upstream secrets, so it is safe).
 - Unbound config is this repo's `home-dns/unbound/unbound.conf`.
+- This node is bootstrapped by [`../pi/bootstrap.sh`](../pi/bootstrap.sh); see
+  [`../pi/README.md`](../pi/README.md) for Tailscale + monitoring wiring.
