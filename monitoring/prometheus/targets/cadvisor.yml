@@ -1,7 +1,8 @@
 # Prometheus file_sd targets: cadvisor on the Pi nodes (job: pi-cadvisor)
-- targets:
-    - "pi-dns.manee-frog.ts.net:8080"
-    - "pi-docker.manee-frog.ts.net:8080"
-  labels:
-    site: home
-    role: pi
+#
+# Neither Pi runs cadvisor yet. To get per-container metrics, deploy
+# pi/node-agent/docker-compose.yml on the node (needs Docker), then add:
+#   - targets: ["dockernodepi.manee-frog.ts.net:8080"]
+#     labels: { site: home, role: pi }
+# and reload Prometheus.
+[]

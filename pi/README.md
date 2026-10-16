@@ -11,6 +11,14 @@ Both run the same **node-agent** (node-exporter + cadvisor) so the VPS Prometheu
 monitors them. Suggested split: give the **Pi 5** the Docker role (more RAM), the
 **Pi 4** the DNS role (it's light) — but either works.
 
+> **Note (as-built):** your nodes (`dnspi`, `dockernodepi`) came up as **DietPi**
+> with the roles already provisioned — AdGuard Home + Unbound on `dnspi`
+> (web UI on `:8083`, upstream → `unbound` `127.0.0.1:5335`), and a service stack
+> (Portainer, Forgejo, InfluxDB, Homebridge, FileBrowser, Syncthing, Webmin) on
+> `dockernodepi`. `bootstrap.sh` is only for a *blank* node — on these, skip
+> sections 1–3 and just wire monitoring (section 4–5). `node_exporter` is already
+> running on both (`:9100`); cadvisor is not.
+
 ## 1. Bootstrap each node
 
 From a checkout of this repo on the Pi:
