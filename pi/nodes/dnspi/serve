@@ -1,0 +1,2 @@
+# dnspi tailnet exposure (applied by pi/deploy.sh)
+443  http://127.0.0.1:8083     # AdGuard Home admin UI -> https://dnspi.manee-frog.ts.net/

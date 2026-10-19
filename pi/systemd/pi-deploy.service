@@ -1,0 +1,12 @@
+[Unit]
+Description=Pi GitOps deploy (pull vps-config and apply)
+After=network-online.target docker.service
+Wants=network-online.target
+# docker.service may not exist on every node; don't hard-require it
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/aadd/vps-config/pi/deploy.sh
+StandardOutput=journal
+StandardError=journal

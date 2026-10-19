@@ -1,0 +1,9 @@
+# dockernodepi tailnet exposure (applied by pi/deploy.sh)
+# <listen-port>  <local-target>            # URL -> https://dockernodepi.manee-frog.ts.net[:port]
+443    http://127.0.0.1:3000                # Forgejo (primary)
+8084   http://127.0.0.1:8084                # FileBrowser
+8384   http://127.0.0.1:8384                # Syncthing
+8581   http://127.0.0.1:8581                # Homebridge
+8086   http://127.0.0.1:8086                # InfluxDB
+10000  https+insecure://127.0.0.1:10000     # Webmin (self-signed)
+9442   https+insecure://127.0.0.1:9442      # Portainer (self-signed)

@@ -1,0 +1,25 @@
+# dockernodepi role containers (declarative; applied by pi/deploy.sh)
+# node_exporter is a native service on this node, so only cadvisor is managed here.
+name: pi-dockernodepi
+
+services:
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    restart: unless-stopped
+    privileged: true
+    command:
+      - --docker_only=true
+      - --housekeeping_interval=30s
+    devices:
+      - /dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    ports:
+      - "0.0.0.0:8080:8080"
+
+  # ── Add spare containers here ─────────────────────────────────────────────
