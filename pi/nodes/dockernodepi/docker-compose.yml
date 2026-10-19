@@ -22,22 +22,5 @@ services:
     ports:
       - "0.0.0.0:8080:8080"
 
-  # ── PXE network boot (netboot.xyz) ────────────────────────────────────────
-  # TFTP :69/udp, web assets :8080, webapp UI :3000.
-  # Point UniFi DHCP at it with: dhcpd_boot_server=<pi-ip>, dhcpd_boot_filename=netboot.xyz.efi
-  netbootxyz:
-    image: ghcr.io/netbootxyz/netbootxyz:latest
-    container_name: netbootxyz
-    restart: unless-stopped
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Detroit
-      - NGINX_PORT=80
-      - TFTP_PORT=69
-    ports:
-      - "8091:3000"      # netboot.xyz webapp UI
-      - "69:69/udp"      # TFTP
-      - "8090:80"        # HTTP assets / kernel+initrd
-    volumes:
-      - ./netbootxyz/config:/config
+  # ── Add spare containers here ─────────────────────────────────────────────
+  # NOTE: PXE/netboot.xyz now runs on `cash` (x86_64) — see docs/pxe-proxmox.md.
