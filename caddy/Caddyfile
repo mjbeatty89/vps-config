@@ -66,10 +66,17 @@ notes.aadd.rocks {
 # 	reverse_proxy 10.1.30.14:5000
 # }
 
-# ── Resume Builder / Storage / Obsidian LiveSync ──────────────────────────
-# Removed 2026-10-15: routes pointed at cash:3500 / cash:9000 / cash:5984,
-# which have never had listeners (dead since ~Sep 2026). Recover from git
-# history if Rx Resume / MinIO / CouchDB are redeployed on cash.
+# ── Resume Builder (Reactive Resume → cash via Tailscale) ─────────────────
+# Restored 2026-10-19 as a fresh v6 instance; the pre-rebuild data was lost.
+# The https:// scheme is required: Tailscale Serve on cash:3500 terminates TLS
+# with the cash.manee-frog.ts.net certificate. A bare host:port sends plaintext
+# HTTP to a TLS listener and fails.
+resume.aadd.rocks {
+	reverse_proxy https://cash.manee-frog.ts.net:3500
+}
+
+# storage-resume.aadd.rocks is deliberately NOT restored: v6 keeps uploads in
+# /app/data and serves them from the app, so there is no MinIO bucket to expose.
 
 # ── Personal Website (matt.aadd.rocks) ──────────────────────────────────
 matt.aadd.rocks {
