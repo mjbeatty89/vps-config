@@ -26,7 +26,7 @@ services:
   # TFTP :69/udp, web assets :8080, webapp UI :3000.
   # Point UniFi DHCP at it with: dhcpd_boot_server=<pi-ip>, dhcpd_boot_filename=netboot.xyz.efi
   netbootxyz:
-    image: lscr.io/linuxserver/netbootxyz:latest
+    image: ghcr.io/netbootxyz/netbootxyz:latest
     container_name: netbootxyz
     restart: unless-stopped
     environment:
