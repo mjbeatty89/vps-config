@@ -42,9 +42,13 @@ Targets on VLAN 30 (`10.1.30.0/23`) are covered. For a machine on another VLAN,
 either put a PXE relay there or add DHCP `boot server`/`bootfile` options to that
 VLAN in UniFi — the MCP exposes `dhcpd_boot_server`/`dhcpd_boot_filename`.
 
-## Rebuild
-Deployed standalone on cash for now. To make it declarative, clone `vps-config`
-on cash and add a `pi/nodes/cash/` manifest + the `pi-deploy.timer`.
+## GitOps
+
+`cash` is now managed like the Pis: `pi-deploy.timer` (every 5 min) runs
+`pi/deploy.sh`, which syncs `/opt/aadd/vps-config`, runs
+`pi/nodes/cash/setup.sh` (dirs + iPXE bootloaders), and applies
+`pi/nodes/cash/docker-compose.yml` + `pi/nodes/cash/dnsmasq/dnsmasq.conf`.
+Data lives in `/opt/netbootxyz-data/{config,tftp}`. Deploy key: `pi-deploy@cash`.
 
 ## Notes
 - `cash` is the primary container host; this adds only tiny DHCP/TFTP services.
