@@ -109,3 +109,15 @@ tailnet policy (adjust tag owners to your account):
   ]
 }
 ```
+
+## 6. Self-updating (on-node GitOps)
+
+Each node runs `pi-deploy.timer` (every 5 min) → `pi/deploy.sh`, which does
+`git fetch/reset` of this repo at `/opt/aadd/vps-config`, applies the node's
+`pi/nodes/<hostname>/docker-compose.yml`, and applies its `serve` rules. So:
+
+- Change a compose file or `serve` manifest in the repo → push → nodes converge.
+- Nodes authenticate with a **read-only deploy key** per host
+  (`/root/.ssh/vps-config-deploy`; keys titled `pi-deploy@<host>` in GitHub).
+
+Logs: `/var/log/pi-deploy.log` and `journalctl -u pi-deploy`.
