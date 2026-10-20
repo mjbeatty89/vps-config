@@ -18,6 +18,10 @@ clients → AdGuard :53 (block, cache, rewrites) → Unbound 127.0.0.1:5335 (rec
 | Query log / statistics | on | needed for tuning + debugging |
 | DHCP | off | UniFi handles DHCP |
 
+> **Schema note (v0.107):** rewrites live under `filtering.rewrites`, custom rules
+> under top-level `user_rules`, DNSSEC under `dns.enable_dnssec`, and blocking mode
+> under `filtering.blocking_mode`. `scripts/tune-dns.sh` handles this for you.
+
 ### Blocklists (balanced, low false positives)
 | List | URL |
 |---|---|
