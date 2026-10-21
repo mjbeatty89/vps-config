@@ -6,3 +6,16 @@
   labels:
     site: home
     role: pi
+
+- targets:
+    - "100.87.215.43:9100"   # pve
+    - "100.66.106.75:9100"   # pvevcm
+  labels:
+    site: home
+    role: proxmox
+
+- targets:
+    - "10.1.30.14:9100"      # PBS
+  labels:
+    site: home
+    role: pbs

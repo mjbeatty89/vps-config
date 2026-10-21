@@ -35,6 +35,35 @@ scrape_configs:
     file_sd_configs:
       - files: ["/etc/prometheus/targets/cadvisor.yml"]
 
+  # ── Proxmox VE (pve-exporter) ─────────────────────────────────────────────
+  - job_name: pve
+    metrics_path: /pve
+    params:
+      module: [pve]
+    static_configs:
+      - targets: ["10.1.30.13"]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: pve-exporter:9221
+
+  - job_name: pvevcm
+    metrics_path: /pve
+    params:
+      module: [pvevcm]
+    static_configs:
+      - targets: ["10.1.30.15"]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: pve-exporter:9221
+
   # ── Blackbox: HTTP probes of public Caddy vhosts ──────────────────────────
   - job_name: blackbox-http
     metrics_path: /probe

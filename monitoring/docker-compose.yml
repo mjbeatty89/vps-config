@@ -124,6 +124,20 @@ services:
       - "127.0.0.1:9130:9130"
     networks: [monitoring]
 
+  # ── Proxmox VE exporter (VM/CT/storage metrics via read-only API tokens) ──
+  pve-exporter:
+    image: prompve/prometheus-pve-exporter:latest
+    container_name: pve-exporter
+    restart: unless-stopped
+    user: "0:0"
+    command:
+      - --config.file=/etc/pve/pve.yml
+    volumes:
+      - /opt/docker/monitoring/pve/pve.yml:/etc/pve/pve.yml:ro
+    ports:
+      - "127.0.0.1:9221:9221"
+    networks: [monitoring]
+
   # ── Service dashboard (links + live status) ────────────────────────────────
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
