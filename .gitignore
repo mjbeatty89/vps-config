@@ -8,3 +8,4 @@ secrets/
 *.bak.*
 __pycache__/
 *.pyc
+inventory/.services.lock
