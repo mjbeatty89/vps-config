@@ -144,7 +144,7 @@ services:
     container_name: homepage
     restart: unless-stopped
     environment:
-      HOMEPAGE_ALLOWED_HOSTS: ${HOMEPAGE_ALLOWED_HOSTS:-home.aadd.rocks}
+      HOMEPAGE_ALLOWED_HOSTS: ${HOMEPAGE_ALLOWED_HOSTS:-oracle.manee-frog.ts.net:3010,dash.aadd.rocks}
     volumes:
       - ./homepage/config:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro

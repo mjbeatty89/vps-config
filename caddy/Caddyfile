@@ -14,9 +14,13 @@
 # DNS: A records for all entries below → 147.224.179.179
 #      Use Cloudflare DNS-only (gray cloud) so Caddy handles TLS via ACME.
 
-# ── Dashboard (Heimdall) ───────────────────────────────────────────────────
+# ── Dashboard (Homepage) ───────────────────────────────────────────────────
+# Same basic-auth credentials as mcp.aadd.rocks.
 dash.aadd.rocks {
-	reverse_proxy localhost:8080
+    basic_auth {
+        mjb $2a$14$oXPP7lv3u1VA3VTDeRbqmOPIr6es/1EqerbfQT7pLGTSKwADO1KOm
+    }
+    reverse_proxy localhost:3010
 }
 
 # ── Workflow Automation (n8n) ──────────────────────────────────────────────

@@ -13,6 +13,9 @@ layout:
   Apps:
     style: row
     columns: 4
+  Media:
+    style: row
+    columns: 4
   Home (over Tailscale):
     style: row
     columns: 4

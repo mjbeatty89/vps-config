@@ -24,6 +24,10 @@ groups:
     order: 60
     columns: 4
     style: row
+  Media:
+    order: 35
+    columns: 4
+    style: row
 services:
 - id: caddy
   name: Caddy
@@ -511,3 +515,163 @@ services:
   - infra
   - tailnet
   updated_at: '2026-10-23'
+- id: plex
+  added_at: '2026-10-23'
+  added_by: opencode
+  name: Plex
+  group: Media
+  href: http://100.76.50.59:32400/web
+  icon: plex
+  description: Movies/TV (Unraid)
+  status: active
+  owner: mjb
+  source:
+    host: unraid
+    kind: docker
+    ref: plex
+  tags:
+  - media
+  - tailnet
+  updated_at: '2026-10-23'
+  docker_server: unraid
+  docker_container: plex
+- id: jellyfin
+  added_at: '2026-10-23'
+  added_by: opencode
+  name: Jellyfin
+  group: Media
+  href: http://100.76.50.59:8096
+  icon: jellyfin
+  description: Media playback (Unraid)
+  status: active
+  owner: mjb
+  source:
+    host: unraid
+    kind: docker
+    ref: jellyfin
+  tags:
+  - media
+  - tailnet
+  updated_at: '2026-10-23'
+  docker_server: unraid
+  docker_container: jellyfin
+- id: qbittorrent
+  added_at: '2026-10-23'
+  added_by: opencode
+  name: qBittorrent
+  group: Media
+  href: http://100.76.50.59:8080
+  icon: qbittorrent
+  description: Torrent client (Unraid)
+  status: active
+  owner: mjb
+  source:
+    host: unraid
+    kind: docker
+    ref: qbittorrent
+  tags:
+  - media
+  - tailnet
+  updated_at: '2026-10-23'
+  docker_server: unraid
+  docker_container: qbittorrent
+- id: seerr
+  added_at: '2026-10-23'
+  added_by: opencode
+  name: Seerr
+  group: Media
+  href: http://100.76.50.59:5055
+  icon: overseerr
+  description: Media requests (Unraid)
+  status: active
+  owner: mjb
+  source:
+    host: unraid
+    kind: docker
+    ref: seerr
+  tags:
+  - media
+  - tailnet
+  updated_at: '2026-10-23'
+  docker_server: unraid
+  docker_container: seerr
+- id: prowlarr
+  added_at: '2026-10-23'
+  added_by: opencode
+  name: Prowlarr
+  group: Media
+  href: http://100.76.50.59:9696
+  icon: prowlarr
+  description: Indexer manager (Unraid)
+  status: active
+  owner: mjb
+  source:
+    host: unraid
+    kind: docker
+    ref: prowlarr
+  tags:
+  - media
+  - tailnet
+  updated_at: '2026-10-23'
+  docker_server: unraid
+  docker_container: prowlarr
+- id: radarr
+  added_at: '2026-10-23'
+  added_by: opencode
+  name: Radarr
+  group: Media
+  href: http://100.76.50.59:7878
+  icon: radarr
+  description: Movie automation (Unraid)
+  status: active
+  owner: mjb
+  source:
+    host: unraid
+    kind: docker
+    ref: radarr
+  tags:
+  - media
+  - tailnet
+  updated_at: '2026-10-23'
+  docker_server: unraid
+  docker_container: radarr
+- id: sonarr
+  added_at: '2026-10-23'
+  added_by: opencode
+  name: Sonarr
+  group: Media
+  href: http://100.76.50.59:8989
+  icon: sonarr
+  description: TV automation (Unraid)
+  status: active
+  owner: mjb
+  source:
+    host: unraid
+    kind: docker
+    ref: sonarr
+  tags:
+  - media
+  - tailnet
+  updated_at: '2026-10-23'
+  docker_server: unraid
+  docker_container: sonarr
+- id: bazarr
+  added_at: '2026-10-23'
+  added_by: opencode
+  name: Bazarr
+  group: Media
+  href: http://100.76.50.59:6767
+  icon: bazarr
+  description: Subtitles (Unraid)
+  status: active
+  owner: mjb
+  source:
+    host: unraid
+    kind: docker
+    ref: bazarr
+  tags:
+  - media
+  - tailnet
+  updated_at: '2026-10-23'
+  docker_server: unraid
+  docker_container: bazarr

@@ -21,8 +21,14 @@ inventory/services.yaml          ← humans + agents register here
                └── Proxmox notes (homepage.*)
 ```
 
-The VPS Homepage (`:3010`, tailnet) is the single dashboard. Cash’s dashboard
-pilots are not the source of truth and should be retired eventually.
+The VPS Homepage is the single dashboard:
+
+- `https://dash.aadd.rocks` — same basic-auth credentials as `mcp.aadd.rocks`
+- `https://oracle.manee-frog.ts.net:3010` — tailnet-only
+- `http://127.0.0.1:3010` — on the VPS
+
+Heimdall is retired. Cash’s dashboard pilots are not the source of truth and should
+be retired eventually.
 
 ## Schema
 

@@ -2,7 +2,7 @@
 # All services bind to 127.0.0.1 only; Caddy handles external TLS termination
 #
 # n8n + postgres use named Docker volumes (avoids permission issues)
-# heimdall, uptime-kuma, portainer use bind mounts in /opt/docker/
+# uptime-kuma and portainer use bind mounts in /opt/docker/
 
 volumes:
   n8n_storage:
@@ -58,19 +58,8 @@ services:
     links:
       - postgres
 
-  # ── Dashboard ─────────────────────────────────────────────────────────────
-  heimdall:
-    image: lscr.io/linuxserver/heimdall:latest
-    container_name: heimdall
-    environment:
-      - PUID=1002
-      - PGID=1002
-      - TZ=America/Detroit
-    volumes:
-      - /opt/docker/heimdall:/config
-    ports:
-      - "127.0.0.1:8080:80"
-    restart: unless-stopped
+  # Dashboard moved to Homepage in monitoring/docker-compose.yml.
+  # Heimdall retired 2026-10-23; its /opt/docker/heimdall data is kept for rollback.
 
   # ── Uptime Monitoring ──────────────────────────────────────────────────────
   uptime-kuma:

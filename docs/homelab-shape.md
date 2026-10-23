@@ -157,7 +157,7 @@ Unraid details:
 
 - Caddy ingress
 - Prometheus, Grafana, Netdata, Uptime Kuma
-- Homepage
+- Homepage (`https://dash.aadd.rocks`, basic auth; tailnet `:3010`); Heimdall retired
 - `watchman` Telegram watchdog
 - Tailscale exit node
 

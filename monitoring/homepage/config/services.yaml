@@ -128,6 +128,55 @@
       widget:
         type: siteMonitor
         url: http://10.1.30.23:3000/
+- Media:
+  - Plex:
+      icon: plex
+      description: Movies/TV (Unraid)
+      href: http://100.76.50.59:32400/web
+      server: unraid
+      container: plex
+  - Jellyfin:
+      icon: jellyfin
+      description: Media playback (Unraid)
+      href: http://100.76.50.59:8096
+      server: unraid
+      container: jellyfin
+  - qBittorrent:
+      icon: qbittorrent
+      description: Torrent client (Unraid)
+      href: http://100.76.50.59:8080
+      server: unraid
+      container: qbittorrent
+  - Seerr:
+      icon: overseerr
+      description: Media requests (Unraid)
+      href: http://100.76.50.59:5055
+      server: unraid
+      container: seerr
+  - Prowlarr:
+      icon: prowlarr
+      description: Indexer manager (Unraid)
+      href: http://100.76.50.59:9696
+      server: unraid
+      container: prowlarr
+  - Radarr:
+      icon: radarr
+      description: Movie automation (Unraid)
+      href: http://100.76.50.59:7878
+      server: unraid
+      container: radarr
+  - Sonarr:
+      icon: sonarr
+      description: TV automation (Unraid)
+      href: http://100.76.50.59:8989
+      server: unraid
+      container: sonarr
+  - Bazarr:
+      icon: bazarr
+      description: Subtitles (Unraid)
+      href: http://100.76.50.59:6767
+      server: unraid
+      container: bazarr
 - Home (over Tailscale):
   - PhotoPrism:
       icon: photoprism

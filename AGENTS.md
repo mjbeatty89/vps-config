@@ -124,6 +124,7 @@ tag is not enough without a URL; the entry remains pending.
 ## Dashboard
 
 - Renderer: `scripts/render-homepage.py`
+- Homepage: `https://dash.aadd.rocks` (basic auth) or tailnet `:3010`
 - Homepage config: `monitoring/homepage/config/`
 - Deploy: `deploy-vps.sh` pulls the repo, checks generated config, and restarts
   Homepage only when the generated services file changes.
