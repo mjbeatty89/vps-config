@@ -166,6 +166,7 @@ Unraid details:
 | 2026-10-22 | Unraid array rebuilt: parity + WD + BX500 + My Passport + cache; 3.8 TB |
 | 2026-10-23 | jev-router upstream repointed to `10.1.30.20:20128`; Hermes prepared models restored |
 | 2026-10-23 | OmniRoute MCP switched to management key; 110 tools registered |
+| 2026-10-23 | jev-router set live with explicit-model passthrough + `/stats` |
 | 2026-10-23 | PBS offsite Borg job installed; initial upload running |
 | pending | PBS offsite restore test; TrueNAS storage-plugin evaluation |
 | pending | TrueNAS Proxmox storage-plugin evaluation on pvevcm |
@@ -181,8 +182,9 @@ Unraid details:
 - PBS offsite is configured: ZFS snapshot of PBS `rpool`, Borg backup of
   `/rpool/backups` to `pbs-backups` on the Storage Box, retention
   7 daily / 4 weekly / 6 monthly, `pbs-offsite-borg.timer` daily at 03:30.
-  See [pbs-offsite-borg.md](pbs-offsite-borg.md). Initial upload was running at
-  the time of writing; complete a restore test before relying on it.
+  See [pbs-offsite-borg.md](pbs-offsite-borg.md). Initial 7.34 GB backup completed
+  in 10m 30s, `borg check` passed, and a chunk restore matched SHA-256 exactly.
+  Borg passphrase and key export are in 1Password.
 
 ## 9. Known issues / next steps
 
@@ -193,11 +195,15 @@ Unraid details:
 3. **PBS `sdb`** — ST2000DL003 has reallocated/pending sectors; replace and resilver.
 4. **Resume** — still on cash; copy volumes/secrets and update the Caddy route.
 5. **Forgejo runner** — remains on ai-server; it reaches the new LXC through `:3443`.
-6. **jev-router dry-run** — see [hermes-stack.md](hermes-stack.md); model selection
-   outside `pools` is rewritten to `default`.
+6. **jev-router live/passthrough** — explicit `auto/*` / `subs2free` selections now
+   reach OmniRoute; semantic decisions are logged via `/stats` and `/decisions`.
+   See [hermes-stack.md](hermes-stack.md).
 7. **Secrets hygiene** — rotate the 1Password service-account/Connect tokens; keep the
    OmniRoute management key in 1Password and `.env` only.
 8. **Tailscale key expiry** — personal devices are tagged and never expire; untag and
    set 90-day expiry in the admin console if desired.
-9. **Hetzner offsite** — Borg repo/timer are live; finish the first upload, run a
-   restore test, and export/store the Borg key.
+9. **Hetzner offsite** — complete: initial backup, `borg check`, key export, and a
+   chunk restore test all passed. Monitor the 1 TB quota as the datastore grows.
+10. **QDevice** — `10.1.31.103` is reachable but currently public-key only and
+    `corosync-qnetd` is not listening on 5403. Need qdevice root access (or run
+    `pvecm qdevice setup 10.1.31.103` from pve after qnetd is started).

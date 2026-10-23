@@ -90,7 +90,8 @@ Config: `/home/mjb/dev/opencode/ai-serving/jev-router/config.yaml`
 Service: `~/.config/systemd/user/jev-router.service`  
 Health: `curl http://127.0.0.1:8791/health`
 
-Current mode: **`dry-run`**  
+Current mode: **`live`**  
+Explicit-model passthrough: **enabled**  
 Fallback pool: `default`  
 OmniRoute upstream: `http://10.1.30.20:20128`
 
@@ -106,26 +107,42 @@ OmniRoute upstream: `http://10.1.30.20:20128`
 | effort=low | `default` |
 | anything else | `default` |
 
-### Important dry-run behaviour
+### Explicit-model passthrough
 
-`jev-router` is still in `mode: dry-run`. In this mode it logs the decision but only
-preserves a requested model if that model is one of the named `pools`:
+`passthrough_explicit_models: true` means the model the caller selected is preserved
+and forwarded to OmniRoute, including:
 
-```yaml
-pools: [default, hermes, subs-coding, subs-coding-reasoning, free-stack, historian]
+- `hermes` (Hermes default)
+- `subs2free`
+- any `auto/*` model shown in the Hermes WebUI
+
+The semantic decision is still computed and logged as `would_have_used`; it is only
+applied when the request has no explicit model. This gives you real traffic to
+evaluate while letting the selected model actually run.
+
+Response headers expose the split:
+
+```text
+x-jev-mode: live
+x-jev-model: <model actually sent upstream>
+x-jev-pool: <semantic pool it would have chosen>
+x-jev-passthrough: 1
 ```
 
-For Hermes’ default model `hermes`, the request is preserved and forwarded as the
-`hermes` combo. For a model **not** in `pools` (for example a selected
-`auto/best-coding` in the WebUI, or `subs2free`), the request is rewritten to
-`default`. That is current behaviour, not an OmniRoute failure.
+If you want pure semantic routing to override explicit selections, set
+`passthrough_explicit_models: false`; then `mode: live` applies the chosen pool.
 
-If per-request model selection should pass through unchanged, either:
+### Evaluation
 
-1. switch jev-router to `mode: live` after validating the routes, or
-2. add a passthrough branch / include the model IDs in the allowed set.
+`GET /stats` aggregates `decisions.jsonl`:
 
-Do this deliberately: live mode changes routing for every `/v1` caller.
+```bash
+curl -s http://127.0.0.1:8791/stats | python3 -m json.tool
+```
+
+It reports counts by actual model (`used_pool`), semantic choice
+(`by_semantic_pool`), task/effort, upstream status, passthrough count, and average
+latency. `GET /decisions?limit=N` returns the raw entries.
 
 ## 4. OmniRoute
 
@@ -144,7 +161,7 @@ Data:
 | Primary DB | `storage.sqlite` ~100 MB |
 | Combos | 12 |
 | Provider connections | 40+ |
-| Models exposed by `/v1/models` | ~7,224 |
+| Models exposed by `/v1/models` | ~7,228 |
 
 The custom **`hermes` combo** is present in `storage.sqlite`:
 
@@ -171,6 +188,9 @@ curl -s http://127.0.0.1:8791/health | python3 -m json.tool
 curl -s http://127.0.0.1:8791/v1/models | python3 -c \
   'import sys,json; print(len(json.load(sys.stdin)["data"]),"models")'
 
+# Routing evaluation summary
+curl -s http://127.0.0.1:8791/stats | python3 -m json.tool
+
 # OmniRoute directly (inference key)
 curl -s -H "Authorization: Bearer $OMNIROUTE_API_KEY" \
   http://10.1.30.20:20128/v1/models >/dev/null && echo ok
@@ -188,10 +208,10 @@ WebUI’s model builder; the on-disk cache is
 
 ## 6. Known caveats / next steps
 
-- jev-router is **dry-run**; see the passthrough caveat above.
+- Explicit-model passthrough is **on**: selecting `auto/*` or `subs2free` now reaches
+  that model. The semantic decision is still logged but not applied for explicit
+  selections; use `/stats` and `/decisions` to evaluate it.
 - The `hermes` combo is not listed by `/v1/models`; it is a combo, not a provider model.
-- `subs2free` is the custom provider’s default model but is **not** in jev-router’s
-  `pools`, so requests for it currently become `default`.
 - OmniRoute MCP uses a high-privilege management key. Keep it in `.env` (600) and
   1Password; do not expose it to the browser or public ingress.
 - If jev-router/Hermes move to Proxmox later, update all three URLs together and keep

@@ -1,7 +1,7 @@
 # PBS Offsite Backup — Hetzner Storage Box
 
 Last updated: 2026-10-23  
-Status: initial backup running; daily timer enabled.
+Status: initial backup completed and restore-tested; daily timer enabled.
 
 ## Design
 
@@ -22,6 +22,18 @@ Hetzner Storage Box
 A ZFS snapshot is taken first so Borg sees a consistent datastore. The snapshot is
 destroyed after the run.
 
+## Initial result
+
+First run completed 2026-10-22 23:01 CDT:
+
+- Archive: `pbs-pbs-offsite-20261022-225028`
+- Original / compressed / deduplicated: **7.34 GB / 7.30 GB / 7.27 GB**
+- Files: 5,891
+- Duration: 10m 30s
+- `borg check` completed without errors.
+- Restore test: extracted a `.chunks` file from the archive and its SHA-256 matched
+  the live PBS file exactly.
+
 ## Endpoints / paths
 
 | Item | Value |
@@ -34,6 +46,7 @@ destroyed after the run.
 | SSH key on PBS | `/root/.ssh/id_ed25519_hetzner` (public key appended to Storage Box `.ssh/authorized_keys`) |
 | Root env | `/etc/pbs-offsite-borg.env` (mode 600) |
 | Borg passphrase | 1Password `op://1pserv/PBS_OFFSITE_BORG/password` |
+| Borg key export | 1Password `PBS_OFFSITE_BORG_KEY`; copy on PBS `/root/pbs-borg-key.txt` (600) |
 | Script | `/usr/local/sbin/pbs-offsite-borg.sh` |
 | Service | `/etc/systemd/system/pbs-offsite-borg.service` |
 | Timer | `/etc/systemd/system/pbs-offsite-borg.timer` |
