@@ -6,3 +6,5 @@ secrets/
 1password-credentials.json
 *.bak
 *.bak.*
+__pycache__/
+*.pyc

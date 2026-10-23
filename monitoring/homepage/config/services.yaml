@@ -1,144 +1,175 @@
 - Gateway:
-    - Caddy:
-        icon: caddy
-        description: Reverse proxy + auto-TLS
-        href: https://dash.aadd.rocks
-        widget:
-          type: siteMonitor
-          url: https://dash.aadd.rocks
-    - Uptime Kuma:
-        icon: uptime-kuma
-        description: Uptime + status page
-        href: https://status.aadd.rocks
-        widget:
-          type: siteMonitor
-          url: https://status.aadd.rocks
-    - Cloudflare:
-        icon: cloudflare
-        description: DNS + tunnels
-        href: https://dash.cloudflare.com
-    - Tailscale:
-        icon: tailscale
-        description: Mesh VPN
-        href: https://login.tailscale.com/admin/machines
-
+  - Caddy:
+      icon: caddy
+      description: Reverse proxy + auto-TLS
+      href: https://dash.aadd.rocks
+      widget:
+        type: siteMonitor
+        url: https://dash.aadd.rocks
+  - Uptime Kuma:
+      icon: uptime-kuma
+      description: Uptime + status page
+      href: https://status.aadd.rocks
+      widget:
+        type: siteMonitor
+        url: https://status.aadd.rocks
+  - Cloudflare:
+      icon: cloudflare
+      description: DNS + tunnels
+      href: https://dash.cloudflare.com
+  - Tailscale:
+      icon: tailscale
+      description: Mesh VPN
+      href: https://login.tailscale.com/admin/machines
 - Monitoring:
-    - Grafana:
-        icon: grafana
-        description: Dashboards (tailnet)
-        href: https://oracle.manee-frog.ts.net:3002
-        widget:
-          type: siteMonitor
-          url: http://grafana:3000/login
-    - Prometheus:
-        icon: prometheus
-        description: Metrics (tailnet)
-        href: https://oracle.manee-frog.ts.net:9090
-        widget:
-          type: siteMonitor
-          url: http://prometheus:9090/-/ready
-    - Netdata:
-        icon: netdata
-        description: Host + container metrics (tailnet)
-        href: https://oracle.manee-frog.ts.net:19999
-        widget:
-          type: siteMonitor
-          url: https://oracle.manee-frog.ts.net:19999
-    - Uptime Kuma (tailnet):
-        icon: uptime-kuma
-        description: Kuma direct
-        href: https://oracle.manee-frog.ts.net:3001
-
+  - Grafana:
+      icon: grafana
+      description: Dashboards (tailnet)
+      href: https://oracle.manee-frog.ts.net:3002
+      widget:
+        type: siteMonitor
+        url: http://grafana:3000/login
+  - Prometheus:
+      icon: prometheus
+      description: Metrics (tailnet)
+      href: https://oracle.manee-frog.ts.net:9090
+      widget:
+        type: siteMonitor
+        url: http://prometheus:9090/-/ready
+  - Netdata:
+      icon: netdata
+      description: Host + container metrics (tailnet)
+      href: https://oracle.manee-frog.ts.net:19999
+      widget:
+        type: siteMonitor
+        url: https://oracle.manee-frog.ts.net:19999
+  - Uptime Kuma (tailnet):
+      icon: uptime-kuma
+      description: Kuma direct
+      href: https://oracle.manee-frog.ts.net:3001
 - Apps:
-    - n8n:
-        icon: n8n
-        description: Workflow automation
-        href: https://n8n.aadd.rocks
-        server: vps
-        container: n8n
-        widget:
-          type: siteMonitor
-          url: https://n8n.aadd.rocks
-    - Gitea:
-        icon: gitea
-        description: Git hosting
-        href: https://git.aadd.rocks
-        server: vps
-        container: gitea
-        widget:
-          type: siteMonitor
-          url: https://git.aadd.rocks
-    - Vaultwarden:
-        icon: vaultwarden
-        description: Password vault
-        href: https://vault.aadd.rocks
-        server: vps
-        container: vaultwarden
-        widget:
-          type: siteMonitor
-          url: https://vault.aadd.rocks
-    - Portainer:
-        icon: portainer
-        description: Container management
-        href: https://portainer.aadd.rocks
-        server: vps
-        container: portainer
-        widget:
-          type: siteMonitor
-          url: https://portainer.aadd.rocks
-    - ntfy:
-        icon: ntfy
-        description: Push notifications
-        href: https://ntfy.aadd.rocks
-        server: vps
-        container: ntfy
-        widget:
-          type: siteMonitor
-          url: https://ntfy.aadd.rocks
-    - Stirling PDF:
-        icon: pdf
-        description: PDF tools
-        href: https://pdf.aadd.rocks
-        server: vps
-        container: stirling-pdf
-        widget:
-          type: siteMonitor
-          url: https://pdf.aadd.rocks
-    - Memos:
-        icon: memos
-        description: Quick notes
-        href: https://notes.aadd.rocks
-        server: vps
-        container: memos
-        widget:
-          type: siteMonitor
-          url: https://notes.aadd.rocks
-    - Termix:
-        icon: terminal
-        description: Web terminal
-        href: https://oracle.manee-frog.ts.net:8444
-        server: vps
-        container: termix
-    - Heimdall:
-        icon: heimdall
-        description: Legacy dashboard
-        href: https://dash.aadd.rocks
-        server: vps
-        container: heimdall
-
+  - n8n:
+      icon: n8n
+      description: Workflow automation
+      href: https://n8n.aadd.rocks
+      server: vps
+      container: n8n
+      widget:
+        type: siteMonitor
+        url: https://n8n.aadd.rocks
+  - Gitea:
+      icon: gitea
+      description: Git hosting
+      href: https://git.aadd.rocks
+      server: vps
+      container: gitea
+      widget:
+        type: siteMonitor
+        url: https://git.aadd.rocks
+  - Vaultwarden:
+      icon: vaultwarden
+      description: Password vault
+      href: https://vault.aadd.rocks
+      server: vps
+      container: vaultwarden
+      widget:
+        type: siteMonitor
+        url: https://vault.aadd.rocks
+  - Portainer:
+      icon: portainer
+      description: Container management
+      href: https://portainer.aadd.rocks
+      server: vps
+      container: portainer
+      widget:
+        type: siteMonitor
+        url: https://portainer.aadd.rocks
+  - ntfy:
+      icon: ntfy
+      description: Push notifications
+      href: https://ntfy.aadd.rocks
+      server: vps
+      container: ntfy
+      widget:
+        type: siteMonitor
+        url: https://ntfy.aadd.rocks
+  - Stirling PDF:
+      icon: pdf
+      description: PDF tools
+      href: https://pdf.aadd.rocks
+      server: vps
+      container: stirling-pdf
+      widget:
+        type: siteMonitor
+        url: https://pdf.aadd.rocks
+  - Memos:
+      icon: memos
+      description: Quick notes
+      href: https://notes.aadd.rocks
+      server: vps
+      container: memos
+      widget:
+        type: siteMonitor
+        url: https://notes.aadd.rocks
+  - Termix:
+      icon: terminal
+      description: Web terminal (pve LXC 121)
+      href: https://ai-server.manee-frog.ts.net:8086
+  - Heimdall:
+      icon: heimdall
+      description: Legacy dashboard
+      href: https://dash.aadd.rocks
+      server: vps
+      container: heimdall
+  - Forgejo:
+      icon: forgejo
+      description: Git hosting (pve LXC 122)
+      href: https://ai-server.manee-frog.ts.net:3443
+      widget:
+        type: siteMonitor
+        url: http://10.1.30.23:3000/
 - Home (over Tailscale):
-    - PhotoPrism:
-        icon: photoprism
-        description: ai-server:2342
-        href: https://photoprism.aadd.rocks
-        widget:
-          type: siteMonitor
-          url: https://photoprism.aadd.rocks
-    - Home Assistant:
-        icon: home-assistant
-        description: via Tailscale
-        href: https://ha.manee-frog.ts.net
-    - MCP Gateway:
-        icon: mcp
-        description: cash-mcp :8443
-        href: https://mcp.aadd.rocks
+  - PhotoPrism:
+      icon: photoprism
+      description: ai-server:2342
+      href: https://photoprism.aadd.rocks
+      widget:
+        type: siteMonitor
+        url: https://photoprism.aadd.rocks
+  - Home Assistant:
+      icon: home-assistant
+      description: via Tailscale
+      href: https://ha.manee-frog.ts.net
+  - MCP Gateway:
+      icon: mcp
+      description: cash-mcp :8443
+      href: https://mcp.aadd.rocks
+- AI:
+  - OmniRoute:
+      icon: ai
+      description: AI gateway + combos (pve LXC 120)
+      href: https://ai-server.manee-frog.ts.net:9443
+      widget:
+        type: siteMonitor
+        url: http://10.1.30.20:20128/health
+- Infrastructure:
+  - Proxmox pve:
+      icon: proxmox
+      description: PVE node (10.1.30.13)
+      href: https://100.87.215.43:8006
+  - Proxmox pvevcm:
+      icon: proxmox
+      description: PVE backup/experiment node (10.1.30.15)
+      href: https://100.66.106.75:8006
+  - PBS:
+      icon: proxmox-backup-server
+      description: Proxmox Backup Server (10.1.30.14)
+      href: https://10.1.30.14:8007
+  - TrueNAS:
+      icon: truenas
+      description: Storage / NFS (10.1.30.11)
+      href: https://100.102.150.25
+  - Unraid:
+      icon: unraid
+      description: Media array + cache (10.1.30.16)
+      href: http://100.76.50.59

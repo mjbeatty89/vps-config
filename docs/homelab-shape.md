@@ -61,6 +61,7 @@ are documented; credentials stay in 1Password or root-only files.
 | dnspi | `10.1.30.100` | `100.124.162.46` | AdGuard + Unbound primary |
 | dockernodepi | `10.1.30.101` | `100.116.201.113` | cAdvisor + VLAN 40 mDNS |
 | dns2 | `10.1.30.6` | — | AdGuard/Unbound secondary on pvevcm LXC 110 |
+| qdevice | `10.1.31.103` | `100.122.140.11` | corosync-qnetd 3.0.3; quorum vote |
 
 ## 3. Tailscale
 
@@ -72,6 +73,10 @@ are documented; credentials stay in 1Password or root-only files.
   - TrueNAS → `10.1.30.0/23`
   - pvevcm → `10.1.10.0/23`, `10.1.40.0/23`, `10.1.50.0/24`
 - pvevcm has `--accept-routes=false` to avoid the old TrueNAS LAN loop.
+- **QDevice:** `qdevice` at `100.122.140.11`, `corosync-qnetd` 3.0.3; qdevice
+  clients active on `pve` and `pvevcm`; expected votes **3**, total votes **3**.
+  The old `10.1.31.103` path is not listening; cluster qdevice traffic uses the
+  tailnet address.
 - Monitoring/admin UIs are intended to be tailnet-only; do not expose Grafana,
   Prometheus, Kuma, Homepage, OmniRoute, Termix, or Forgejo on the public VPS.
 
@@ -167,8 +172,9 @@ Unraid details:
 | 2026-10-23 | jev-router upstream repointed to `10.1.30.20:20128`; Hermes prepared models restored |
 | 2026-10-23 | OmniRoute MCP switched to management key; 110 tools registered |
 | 2026-10-23 | jev-router set live with explicit-model passthrough + `/stats` |
-| 2026-10-23 | PBS offsite Borg job installed; initial upload running |
-| pending | PBS offsite restore test; TrueNAS storage-plugin evaluation |
+| 2026-10-23 | PBS offsite Borg job installed; initial backup verified |
+| 2026-10-23 | QDevice joined at `100.122.140.11`; expected votes 3, quorate |
+| pending | TrueNAS storage-plugin evaluation |
 | pending | TrueNAS Proxmox storage-plugin evaluation on pvevcm |
 | pending | Resume migration to PVE; Unraid media apps |
 
@@ -204,6 +210,3 @@ Unraid details:
    set 90-day expiry in the admin console if desired.
 9. **Hetzner offsite** — complete: initial backup, `borg check`, key export, and a
    chunk restore test all passed. Monitor the 1 TB quota as the datastore grows.
-10. **QDevice** — `10.1.31.103` is reachable but currently public-key only and
-    `corosync-qnetd` is not listening on 5403. Need qdevice root access (or run
-    `pvecm qdevice setup 10.1.31.103` from pve after qnetd is started).

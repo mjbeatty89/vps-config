@@ -1,0 +1,513 @@
+version: 1
+groups:
+  Gateway:
+    order: 10
+    columns: 4
+    style: row
+  Monitoring:
+    order: 20
+    columns: 4
+    style: row
+  Apps:
+    order: 30
+    columns: 4
+    style: row
+  Home (over Tailscale):
+    order: 40
+    columns: 4
+    style: row
+  AI:
+    order: 50
+    columns: 4
+    style: row
+  Infrastructure:
+    order: 60
+    columns: 4
+    style: row
+services:
+- id: caddy
+  name: Caddy
+  group: Gateway
+  href: https://dash.aadd.rocks
+  icon: caddy
+  description: Reverse proxy + auto-TLS
+  status: active
+  source:
+    kind: manual
+  owner: mjb
+  added_by: migration-homepage
+  added_at: '2026-10-23'
+  tags:
+  - public
+  widget:
+    type: siteMonitor
+    url: https://dash.aadd.rocks
+- id: uptime-kuma
+  name: Uptime Kuma
+  group: Gateway
+  href: https://status.aadd.rocks
+  icon: uptime-kuma
+  description: Uptime + status page
+  status: active
+  source:
+    kind: manual
+  owner: mjb
+  added_by: migration-homepage
+  added_at: '2026-10-23'
+  tags:
+  - public
+  widget:
+    type: siteMonitor
+    url: https://status.aadd.rocks
+- id: cloudflare
+  name: Cloudflare
+  group: Gateway
+  href: https://dash.cloudflare.com
+  icon: cloudflare
+  description: DNS + tunnels
+  status: active
+  source:
+    kind: manual
+  owner: mjb
+  added_by: migration-homepage
+  added_at: '2026-10-23'
+  tags:
+  - external
+- id: tailscale
+  name: Tailscale
+  group: Gateway
+  href: https://login.tailscale.com/admin/machines
+  icon: tailscale
+  description: Mesh VPN
+  status: active
+  source:
+    kind: manual
+  owner: mjb
+  added_by: migration-homepage
+  added_at: '2026-10-23'
+  tags:
+  - external
+- id: grafana
+  name: Grafana
+  group: Monitoring
+  href: https://oracle.manee-frog.ts.net:3002
+  icon: grafana
+  description: Dashboards (tailnet)
+  status: active
+  source:
+    kind: manual
+  owner: mjb
+  added_by: migration-homepage
+  added_at: '2026-10-23'
+  tags:
+  - tailnet
+  widget:
+    type: siteMonitor
+    url: http://grafana:3000/login
+- id: prometheus
+  name: Prometheus
+  group: Monitoring
+  href: https://oracle.manee-frog.ts.net:9090
+  icon: prometheus
+  description: Metrics (tailnet)
+  status: active
+  source:
+    kind: manual
+  owner: mjb
+  added_by: migration-homepage
+  added_at: '2026-10-23'
+  tags:
+  - tailnet
+  widget:
+    type: siteMonitor
+    url: http://prometheus:9090/-/ready
+- id: netdata
+  name: Netdata
+  group: Monitoring
+  href: https://oracle.manee-frog.ts.net:19999
+  icon: netdata
+  description: Host + container metrics (tailnet)
+  status: active
+  source:
+    kind: manual
+  owner: mjb
+  added_by: migration-homepage
+  added_at: '2026-10-23'
+  tags:
+  - tailnet
+  widget:
+    type: siteMonitor
+    url: https://oracle.manee-frog.ts.net:19999
+- id: uptime-kuma-tailnet
+  name: Uptime Kuma (tailnet)
+  group: Monitoring
+  href: https://oracle.manee-frog.ts.net:3001
+  icon: uptime-kuma
+  description: Kuma direct
+  status: active
+  source:
+    kind: manual
+  owner: mjb
+  added_by: migration-homepage
+  added_at: '2026-10-23'
+  tags:
+  - tailnet
+- id: n8n
+  name: n8n
+  group: Apps
+  href: https://n8n.aadd.rocks
+  icon: n8n
+  description: Workflow automation
+  status: active
+  source:
+    host: vps
+    kind: docker
+    ref: n8n
+  owner: mjb
+  added_by: migration-homepage
+  added_at: '2026-10-23'
+  tags:
+  - public
+  widget:
+    type: siteMonitor
+    url: https://n8n.aadd.rocks
+  docker_server: vps
+  docker_container: n8n
+- id: gitea
+  name: Gitea
+  group: Apps
+  href: https://git.aadd.rocks
+  icon: gitea
+  description: Git hosting
+  status: active
+  source:
+    host: vps
+    kind: docker
+    ref: gitea
+  owner: mjb
+  added_by: migration-homepage
+  added_at: '2026-10-23'
+  tags:
+  - public
+  widget:
+    type: siteMonitor
+    url: https://git.aadd.rocks
+  docker_server: vps
+  docker_container: gitea
+- id: vaultwarden
+  name: Vaultwarden
+  group: Apps
+  href: https://vault.aadd.rocks
+  icon: vaultwarden
+  description: Password vault
+  status: active
+  source:
+    host: vps
+    kind: docker
+    ref: vaultwarden
+  owner: mjb
+  added_by: migration-homepage
+  added_at: '2026-10-23'
+  tags:
+  - public
+  widget:
+    type: siteMonitor
+    url: https://vault.aadd.rocks
+  docker_server: vps
+  docker_container: vaultwarden
+- id: portainer
+  name: Portainer
+  group: Apps
+  href: https://portainer.aadd.rocks
+  icon: portainer
+  description: Container management
+  status: active
+  source:
+    host: vps
+    kind: docker
+    ref: portainer
+  owner: mjb
+  added_by: migration-homepage
+  added_at: '2026-10-23'
+  tags:
+  - public
+  widget:
+    type: siteMonitor
+    url: https://portainer.aadd.rocks
+  docker_server: vps
+  docker_container: portainer
+- id: ntfy
+  name: ntfy
+  group: Apps
+  href: https://ntfy.aadd.rocks
+  icon: ntfy
+  description: Push notifications
+  status: active
+  source:
+    host: vps
+    kind: docker
+    ref: ntfy
+  owner: mjb
+  added_by: migration-homepage
+  added_at: '2026-10-23'
+  tags:
+  - public
+  widget:
+    type: siteMonitor
+    url: https://ntfy.aadd.rocks
+  docker_server: vps
+  docker_container: ntfy
+- id: stirling-pdf
+  name: Stirling PDF
+  group: Apps
+  href: https://pdf.aadd.rocks
+  icon: pdf
+  description: PDF tools
+  status: active
+  source:
+    host: vps
+    kind: docker
+    ref: stirling-pdf
+  owner: mjb
+  added_by: migration-homepage
+  added_at: '2026-10-23'
+  tags:
+  - public
+  widget:
+    type: siteMonitor
+    url: https://pdf.aadd.rocks
+  docker_server: vps
+  docker_container: stirling-pdf
+- id: memos
+  name: Memos
+  group: Apps
+  href: https://notes.aadd.rocks
+  icon: memos
+  description: Quick notes
+  status: active
+  source:
+    host: vps
+    kind: docker
+    ref: memos
+  owner: mjb
+  added_by: migration-homepage
+  added_at: '2026-10-23'
+  tags:
+  - public
+  widget:
+    type: siteMonitor
+    url: https://notes.aadd.rocks
+  docker_server: vps
+  docker_container: memos
+- id: termix
+  name: Termix
+  group: Apps
+  href: https://ai-server.manee-frog.ts.net:8086
+  icon: terminal
+  description: Web terminal (pve LXC 121)
+  status: active
+  source:
+    host: pve
+    kind: lxc
+    ref: '121'
+  owner: mjb
+  added_by: migration-homepage
+  added_at: '2026-10-23'
+  tags:
+  - tailnet
+  updated_at: '2026-10-23'
+- id: heimdall
+  name: Heimdall
+  group: Apps
+  href: https://dash.aadd.rocks
+  icon: heimdall
+  description: Legacy dashboard
+  status: active
+  source:
+    host: vps
+    kind: docker
+    ref: heimdall
+  owner: mjb
+  added_by: migration-homepage
+  added_at: '2026-10-23'
+  tags:
+  - public
+  docker_server: vps
+  docker_container: heimdall
+- id: photoprism
+  name: PhotoPrism
+  group: Home (over Tailscale)
+  href: https://photoprism.aadd.rocks
+  icon: photoprism
+  description: ai-server:2342
+  status: active
+  source:
+    kind: manual
+  owner: mjb
+  added_by: migration-homepage
+  added_at: '2026-10-23'
+  tags:
+  - public
+  widget:
+    type: siteMonitor
+    url: https://photoprism.aadd.rocks
+- id: home-assistant
+  name: Home Assistant
+  group: Home (over Tailscale)
+  href: https://ha.manee-frog.ts.net
+  icon: home-assistant
+  description: via Tailscale
+  status: active
+  source:
+    kind: manual
+  owner: mjb
+  added_by: migration-homepage
+  added_at: '2026-10-23'
+  tags:
+  - tailnet
+- id: mcp-gateway
+  name: MCP Gateway
+  group: Home (over Tailscale)
+  href: https://mcp.aadd.rocks
+  icon: mcp
+  description: cash-mcp :8443
+  status: active
+  source:
+    kind: manual
+  owner: mjb
+  added_by: migration-homepage
+  added_at: '2026-10-23'
+  tags:
+  - public
+- id: forgejo
+  added_at: '2026-10-23'
+  added_by: opencode
+  name: Forgejo
+  group: Apps
+  href: https://ai-server.manee-frog.ts.net:3443
+  icon: forgejo
+  description: Git hosting (pve LXC 122)
+  status: active
+  owner: mjb
+  source:
+    host: pve
+    kind: lxc
+    ref: '122'
+  tags:
+  - git
+  - tailnet
+  widget:
+    type: siteMonitor
+    url: http://10.1.30.23:3000/
+  updated_at: '2026-10-23'
+- id: omniroute
+  added_at: '2026-10-23'
+  added_by: opencode
+  name: OmniRoute
+  group: AI
+  href: https://ai-server.manee-frog.ts.net:9443
+  icon: ai
+  description: AI gateway + combos (pve LXC 120)
+  status: active
+  owner: mjb
+  source:
+    host: pve
+    kind: lxc
+    ref: '120'
+  tags:
+  - ai
+  - tailnet
+  widget:
+    type: siteMonitor
+    url: http://10.1.30.20:20128/health
+  updated_at: '2026-10-23'
+- id: pve
+  added_at: '2026-10-23'
+  added_by: opencode
+  name: Proxmox pve
+  group: Infrastructure
+  href: https://100.87.215.43:8006
+  icon: proxmox
+  description: PVE node (10.1.30.13)
+  status: active
+  owner: mjb
+  source:
+    host: pve
+    kind: systemd
+    ref: pve
+  tags:
+  - infra
+  - tailnet
+  updated_at: '2026-10-23'
+- id: pvevcm
+  added_at: '2026-10-23'
+  added_by: opencode
+  name: Proxmox pvevcm
+  group: Infrastructure
+  href: https://100.66.106.75:8006
+  icon: proxmox
+  description: PVE backup/experiment node (10.1.30.15)
+  status: active
+  owner: mjb
+  source:
+    host: pvevcm
+    kind: systemd
+    ref: pvevcm
+  tags:
+  - infra
+  - tailnet
+  updated_at: '2026-10-23'
+- id: pbs
+  added_at: '2026-10-23'
+  added_by: opencode
+  name: PBS
+  group: Infrastructure
+  href: https://10.1.30.14:8007
+  icon: proxmox-backup-server
+  description: Proxmox Backup Server (10.1.30.14)
+  status: active
+  owner: mjb
+  source:
+    host: pbs
+    kind: systemd
+    ref: pbs
+  tags:
+  - infra
+  - tailnet
+  updated_at: '2026-10-23'
+- id: truenas
+  added_at: '2026-10-23'
+  added_by: opencode
+  name: TrueNAS
+  group: Infrastructure
+  href: https://100.102.150.25
+  icon: truenas
+  description: Storage / NFS (10.1.30.11)
+  status: active
+  owner: mjb
+  source:
+    host: truenas
+    kind: systemd
+    ref: truenas
+  tags:
+  - infra
+  - tailnet
+  updated_at: '2026-10-23'
+- id: unraid
+  added_at: '2026-10-23'
+  added_by: opencode
+  name: Unraid
+  group: Infrastructure
+  href: http://100.76.50.59
+  icon: unraid
+  description: Media array + cache (10.1.30.16)
+  status: active
+  owner: mjb
+  source:
+    host: unraid
+    kind: systemd
+    ref: unraid
+  tags:
+  - infra
+  - tailnet
+  updated_at: '2026-10-23'

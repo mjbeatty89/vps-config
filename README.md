@@ -35,6 +35,15 @@ Internet → This VPS (147.224.179.179) → Tailscale → Home Lab
 - `systemd/ethtool-gro.service` — UDP GRO fix for Tailscale
 - `ufw-rules.sh` — Firewall rule reference
 
+## Dashboard / service registry
+
+- `inventory/services.yaml` — single source of truth for homelab web services
+- `scripts/register-service.py` — register/update a service
+- `scripts/render-homepage.py` — render the Homepage config
+- `scripts/discover-services.py` — opt-in Docker/Proxmox discovery
+- `AGENTS.md` — required protocol for agents
+- `docs/service-registry.md` — schema, labels, examples
+
 ## Setup Notes
 
 - Tailscale advertises as exit node: `sudo tailscale up --advertise-exit-node --ssh --accept-routes`
