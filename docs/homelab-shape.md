@@ -166,7 +166,8 @@ Unraid details:
 | 2026-10-22 | Unraid array rebuilt: parity + WD + BX500 + My Passport + cache; 3.8 TB |
 | 2026-10-23 | jev-router upstream repointed to `10.1.30.20:20128`; Hermes prepared models restored |
 | 2026-10-23 | OmniRoute MCP switched to management key; 110 tools registered |
-| pending | PBS offsite to Hetzner Storage Box |
+| 2026-10-23 | PBS offsite Borg job installed; initial upload running |
+| pending | PBS offsite restore test; TrueNAS storage-plugin evaluation |
 | pending | TrueNAS Proxmox storage-plugin evaluation on pvevcm |
 | pending | Resume migration to PVE; Unraid media apps |
 
@@ -177,9 +178,11 @@ Unraid details:
 - PBS `truenas-vms` is inactive because TrueNAS LAN TCP is broken; tailnet NFS works.
 - Hetzner Storage Box `hetz-vps` (`u696446.your-storagebox.de`, 1 TB, Helsinki)
   is reachable. It supports **Borg, rsync, sftp, and rclone/restic**.
-- Proposed offsite design: ZFS snapshot of PBS `rpool`, Borg backup of
-  `/rpool/backups` to the Storage Box, retention 7 daily / 4 weekly / 6 monthly,
-  systemd timer after the 02:00 PBS jobs. Not configured yet.
+- PBS offsite is configured: ZFS snapshot of PBS `rpool`, Borg backup of
+  `/rpool/backups` to `pbs-backups` on the Storage Box, retention
+  7 daily / 4 weekly / 6 monthly, `pbs-offsite-borg.timer` daily at 03:30.
+  See [pbs-offsite-borg.md](pbs-offsite-borg.md). Initial upload was running at
+  the time of writing; complete a restore test before relying on it.
 
 ## 9. Known issues / next steps
 
@@ -196,5 +199,5 @@ Unraid details:
    OmniRoute management key in 1Password and `.env` only.
 8. **Tailscale key expiry** — personal devices are tagged and never expire; untag and
    set 90-day expiry in the admin console if desired.
-9. **Hetzner offsite** — create Borg repo + SSH key + passphrase, store in 1Password,
-   install timer on PBS, test restore.
+9. **Hetzner offsite** — Borg repo/timer are live; finish the first upload, run a
+   restore test, and export/store the Borg key.
