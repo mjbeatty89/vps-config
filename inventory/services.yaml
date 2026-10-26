@@ -533,8 +533,6 @@ services:
   - media
   - tailnet
   updated_at: '2026-10-23'
-  docker_server: unraid
-  docker_container: plex
 - id: jellyfin
   added_at: '2026-10-23'
   added_by: opencode
@@ -553,8 +551,6 @@ services:
   - media
   - tailnet
   updated_at: '2026-10-23'
-  docker_server: unraid
-  docker_container: jellyfin
 - id: qbittorrent
   added_at: '2026-10-23'
   added_by: opencode
@@ -573,8 +569,6 @@ services:
   - media
   - tailnet
   updated_at: '2026-10-23'
-  docker_server: unraid
-  docker_container: qbittorrent
 - id: seerr
   added_at: '2026-10-23'
   added_by: opencode
@@ -593,8 +587,6 @@ services:
   - media
   - tailnet
   updated_at: '2026-10-23'
-  docker_server: unraid
-  docker_container: seerr
 - id: prowlarr
   added_at: '2026-10-23'
   added_by: opencode
@@ -613,8 +605,6 @@ services:
   - media
   - tailnet
   updated_at: '2026-10-23'
-  docker_server: unraid
-  docker_container: prowlarr
 - id: radarr
   added_at: '2026-10-23'
   added_by: opencode
@@ -633,8 +623,6 @@ services:
   - media
   - tailnet
   updated_at: '2026-10-23'
-  docker_server: unraid
-  docker_container: radarr
 - id: sonarr
   added_at: '2026-10-23'
   added_by: opencode
@@ -653,8 +641,6 @@ services:
   - media
   - tailnet
   updated_at: '2026-10-23'
-  docker_server: unraid
-  docker_container: sonarr
 - id: bazarr
   added_at: '2026-10-23'
   added_by: opencode
@@ -673,5 +659,3 @@ services:
   - media
   - tailnet
   updated_at: '2026-10-23'
-  docker_server: unraid
-  docker_container: bazarr

@@ -70,6 +70,10 @@ Rules:
 - `href` must be a browser URL (http/https) for active entries.
 - `source` records where it runs; `added_by` records which agent/human added it.
 - `widget` is passed through to Homepage; `--health` creates a `siteMonitor`.
+- Only set `docker_server`/`docker_container` when that server is actually defined
+  in `monitoring/homepage/config/docker.yaml`. Remote Docker hosts such as Unraid
+  are link-only; otherwise Homepage's `/api/docker/statuses` errors on the missing
+  connection.
 - Do not store secrets in this file.
 
 ## Register

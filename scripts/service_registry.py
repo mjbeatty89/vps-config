@@ -87,13 +87,10 @@ def upsert_service(reg: dict[str, Any], data: dict[str, Any], *, added_by: str =
     if data.get("status") == "active" and not current.get("href"):
         raise ValueError(f"service {sid}: active services need href/url")
 
-    # Keep a Docker source useful to Homepage's native Docker integration while
-    # still retaining the source block for discovery/ownership.
-    src = current.get("source") or {}
-    if src.get("kind") == "docker":
-        current.setdefault("docker_server", src.get("host"))
-        current.setdefault("docker_container", src.get("ref"))
-
+    # Only services explicitly wired to a configured Homepage Docker integration
+    # get server/container. Remote Docker hosts (for example Unraid) are links
+    # only unless docker.yaml actually defines that server; otherwise Homepage's
+    # /api/docker/statuses crashes on a null connection.
     return current
 
 
