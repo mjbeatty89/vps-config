@@ -94,14 +94,18 @@ def save_state(state: dict) -> None:
 
 # ── checks ─────────────────────────────────────────────────────────────────
 def current_problems() -> dict[str, str]:
-    """Return {target: reason} for everything currently failing."""
+    """Return only failures sustained for five minutes.
+
+    A single failed Prometheus scrape is telemetry loss, not a host outage.
+    max_over_time remains zero only when every sample in the window failed.
+    """
     problems: dict[str, str] = {}
-    for r in prom_query('up == 0'):
+    for r in prom_query('max_over_time(up[5m]) == 0'):
         m = r["metric"]
-        problems[f"{m.get('job','?')}:{m.get('instance','?')}"] = "scrape down"
-    for r in prom_query('probe_success == 0'):
+        problems[f"{m.get('job','?')}:{m.get('instance','?')}"] = "scrape down for 5m"
+    for r in prom_query('max_over_time(probe_success[5m]) == 0'):
         m = r["metric"]
-        problems[f"probe:{m.get('instance','?')}"] = "probe failing"
+        problems[f"probe:{m.get('instance','?')}"] = "probe failing for 5m"
     return problems
 
 
@@ -188,8 +192,7 @@ def poll_telegram(offset: int | None) -> int | None:
 def main() -> None:
     log(f"watchman starting (prom={PROM}, chat={'set' if CHAT_ID else 'unset'}, poll={POLL_TELEGRAM})")
     state = load_state()
-    if CHAT_ID:
-        send("🛡️ watchman online.")
+    # Startup is silent: restarting the service must not itself page Telegram.
     offset: int | None = None
     last_check = 0.0
     while True:

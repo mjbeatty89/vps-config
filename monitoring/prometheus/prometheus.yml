@@ -21,10 +21,7 @@ scrape_configs:
     static_configs:
       - targets: ["cadvisor:8080"]
 
-  # UniFi controller (starts reporting once unpoller runs with --profile unifi)
-  - job_name: unpoller
-    static_configs:
-      - targets: ["unpoller:9130"]
+  # UniFi metrics are not scraped until an unpoller container is deployed.
 
   # ── Raspberry Pi nodes (file-based service discovery) ─────────────────────
   - job_name: pi-node
@@ -37,6 +34,8 @@ scrape_configs:
 
   # ── Proxmox VE (pve-exporter) ─────────────────────────────────────────────
   - job_name: pve
+    scrape_interval: 2m
+    scrape_timeout: 30s
     metrics_path: /pve
     params:
       module: [pve]
@@ -51,6 +50,8 @@ scrape_configs:
         replacement: pve-exporter:9221
 
   - job_name: pvevcm
+    scrape_interval: 2m
+    scrape_timeout: 30s
     metrics_path: /pve
     params:
       module: [pvevcm]
