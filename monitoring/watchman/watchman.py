@@ -24,7 +24,13 @@ BOT_TOKEN = os.environ.get("TELEGRAM_BOT_API", "").strip()
 CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
 POLL_SECONDS = int(os.environ.get("WATCHMAN_POLL_SECONDS", "60"))
 STATE_FILE = os.environ.get("WATCHMAN_STATE", "/var/lib/watchman/state.json")
-REALERT_SECONDS = int(os.environ.get("WATCHMAN_REALERT_SECONDS", str(6 * 3600)))
+REALERT_SECONDS = int(os.environ.get("WATCHMAN_REALERT_SECONDS", str(24 * 3600)))
+FAILURE_WINDOW = os.environ.get("WATCHMAN_FAILURE_WINDOW", "15m")
+FAILURE_REASON = f"down for {FAILURE_WINDOW}"
+# The PVE exporter is a noisy secondary telemetry path; the node-exporter jobs
+# already monitor PVE host reachability. Require two hours before paging on an
+# exporter-only failure so API latency cannot generate routine notifications.
+JOB_WINDOWS = {"pve": "2h", "pvevcm": "2h"}
 # When false, watchman only SENDS alerts (no getUpdates polling), so it can share
 # a bot token with another agent that owns the polling loop.
 POLL_TELEGRAM = os.environ.get("WATCHMAN_POLL_TELEGRAM", "true").lower() in ("1", "true", "yes", "on")
@@ -94,18 +100,23 @@ def save_state(state: dict) -> None:
 
 # ── checks ─────────────────────────────────────────────────────────────────
 def current_problems() -> dict[str, str]:
-    """Return only failures sustained for five minutes.
-
-    A single failed Prometheus scrape is telemetry loss, not a host outage.
-    max_over_time remains zero only when every sample in the window failed.
-    """
+    """Return only sustained failures; use stricter windows for noisy jobs."""
     problems: dict[str, str] = {}
-    for r in prom_query('max_over_time(up[5m]) == 0'):
+    excluded = "|".join(JOB_WINDOWS)
+    for r in prom_query(
+        f'max_over_time(up{{job!~"{excluded}"}}[{FAILURE_WINDOW}]) == 0'
+    ):
         m = r["metric"]
-        problems[f"{m.get('job','?')}:{m.get('instance','?')}"] = "scrape down for 5m"
-    for r in prom_query('max_over_time(probe_success[5m]) == 0'):
+        problems[f"{m.get('job','?')}:{m.get('instance','?')}"] = FAILURE_REASON
+    for job, window in JOB_WINDOWS.items():
+        for r in prom_query(f'max_over_time(up{{job="{job}"}}[{window}]) == 0'):
+            m = r["metric"]
+            problems[f"{job}:{m.get('instance','?')}"] = f"down for {window}"
+    for r in prom_query(
+        f'max_over_time(probe_success[{FAILURE_WINDOW}]) == 0'
+    ):
         m = r["metric"]
-        problems[f"probe:{m.get('instance','?')}"] = "probe failing for 5m"
+        problems[f"probe:{m.get('instance','?')}"] = f"probe failing for {FAILURE_WINDOW}"
     return problems
 
 
