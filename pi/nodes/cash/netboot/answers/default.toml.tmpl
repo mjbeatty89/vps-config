@@ -1,0 +1,33 @@
+# Default answer file for Proxmox VE automated installation.
+#
+# pi/nodes/cash/setup.sh renders this template into
+# /opt/netbootxyz-data/answers/default.toml with a freshly generated root
+# password hash; the plain-text password is written next to it as
+# root-password (mode 0600). Nothing secret is ever committed to git.
+#
+# Per-machine overriding: drop answers/<mac>.toml next to default.toml, e.g.
+#   /opt/netbootxyz-data/answers/bc:24:11:ab:12:21.toml
+# The pve-answers container prefers the MAC match over default.toml.
+#
+# WARNING: automated installation always destroys the selected disks. The
+# default below installs on /dev/sda only and fails (dropping to a shell) if
+# that disk does not exist.
+
+[global]
+keyboard = "en-us"
+country = "us"
+fqdn.source = "from-dhcp"
+mailto = "root@localhost"
+timezone = "America/Detroit"
+root-password-hashed = "@ROOT_PASSWORD_HASH@"
+reboot-on-error = false
+reboot-mode = "power-off"
+
+[network]
+source = "from-dhcp"
+
+[disk-setup]
+filesystem = "zfs"
+zfs.raid = "raid0"
+zfs.hdsize = 64
+disk-list = ["sda"]

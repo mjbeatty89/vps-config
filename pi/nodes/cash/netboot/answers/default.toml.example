@@ -1,0 +1,36 @@
+# Example per-machine answer file for PVE automated installation.
+#
+# Copy to /opt/netbootxyz-data/answers/<mac>.toml (lower-case, colon
+# separated, matching the MAC the installer reports) and edit. None of the
+# installed answers files are tracked by git.
+#
+# The default generated file installs ZFS (raid0, 64 GiB OS) on /dev/sda.
+# Example below: ZFS mirror across two NVMe disks, named interface.
+
+[global]
+keyboard = "en-us"
+country = "us"
+fqdn = "pve-node.example.lan"
+mailto = "root@example.lan"
+timezone = "America/Detroit"
+root-password = "replace-with-a-real-password"
+root-ssh-keys = [
+    "ssh-ed25519 AAAA... operator@example",
+]
+reboot-on-error = false
+reboot-mode = "power-off"
+
+[network]
+source = "from-dhcp"
+
+[network.interface-name-pinning]
+enabled = true
+
+[network.interface-name-pinning.mapping]
+"bc:24:11:ab:12:21" = "lan0"
+
+[disk-setup]
+filesystem = "zfs"
+zfs.raid = "raid1"
+zfs.hdsize = 100
+filter.ID_MODEL = "Samsung*"

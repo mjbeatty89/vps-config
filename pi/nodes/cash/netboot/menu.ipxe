@@ -1,0 +1,137 @@
+#!ipxe
+# ---------------------------------------------------------------------------
+# Homelab PXE menu - served over TFTP by dnsmasq-pxe on cash (10.1.30.8).
+#
+# Managed in https://github.com/mjbeatty89/vps-config :
+#   pi/nodes/cash/netboot/menu.ipxe  ->  /opt/netbootxyz-data/tftp/menu.ipxe
+#
+# Boot flow: UniFi DHCP -> dnsmasq proxyDHCP (cash) -> netboot.xyz.efi/.kpxe
+# over TFTP -> that bootloader chains tftp://<next-server>/menu.ipxe (this
+# file) before falling back to the internet menu. Every kernel, initrd and ISO
+# below is mirrored on cash and served over HTTP on port 8090, so reinstalls
+# work even when the WAN is down.
+# ---------------------------------------------------------------------------
+
+set nb_server 10.1.30.8
+set assets http://${nb_server}:8090/proxmox
+set pve_ver 9.2-1
+set pbs_ver 4.2-1
+set pdm_ver 1.1-1
+
+# cosmetic helpers
+set space:hex 20:20
+set space ${space:string}
+set cls:hex 1b:5b:4a
+set cls ${cls:string}
+
+:start
+echo ${cls}
+menu Homelab netboot - cash ${nb_server}
+item --gap Proxmox VE ${pve_ver} (local mirror)
+item pve-normal  ${space} Proxmox VE ${pve_ver} - graphical installer
+item pve-text    ${space} Proxmox VE ${pve_ver} - text installer
+item pve-debug   ${space} Proxmox VE ${pve_ver} - debug shell
+item pve-auto    ${space} Proxmox VE ${pve_ver} - unattended (WIPES DISKS)
+item --gap Proxmox Backup Server ${pbs_ver}
+item pbs-normal  ${space} Proxmox Backup Server ${pbs_ver} - graphical installer
+item pbs-text    ${space} Proxmox Backup Server ${pbs_ver} - text installer
+item pbs-debug   ${space} Proxmox Backup Server ${pbs_ver} - debug shell
+item --gap Proxmox Datacenter Manager ${pdm_ver}
+item pdm-normal  ${space} Proxmox Datacenter Manager ${pdm_ver} - graphical installer
+item pdm-text    ${space} Proxmox Datacenter Manager ${pdm_ver} - text installer
+item pdm-debug   ${space} Proxmox Datacenter Manager ${pdm_ver} - debug shell
+item --gap --
+item upstream    ${space} netboot.xyz full menu (needs internet)
+choose --timeout 60000 --default pve-normal target || goto pve-normal
+goto ${target}
+
+# --- Proxmox VE -----------------------------------------------------------
+:pve-normal
+set params splash=silent
+set media ${assets}/pve
+set iso proxmox-ve_${pve_ver}.iso
+goto boot-iso
+
+:pve-text
+set params splash=silent proxtui
+set media ${assets}/pve
+set iso proxmox-ve_${pve_ver}.iso
+goto boot-iso
+
+:pve-debug
+set params splash=verbose proxdebug
+set media ${assets}/pve
+set iso proxmox-ve_${pve_ver}.iso
+goto boot-iso
+
+# Artifacts produced by `proxmox-auto-install-assistant prepare-iso --pxe`;
+# the answer file (per-MAC, else default.toml) is fetched over HTTP POST from
+# pve-answers on ${nb_server}:8091.
+:pve-auto
+set media ${assets}/pve-auto
+goto boot-auto
+
+# --- Proxmox Backup Server ------------------------------------------------
+:pbs-normal
+set params splash=silent
+set media ${assets}/pbs
+set iso proxmox-backup-server_${pbs_ver}.iso
+goto boot-iso
+
+:pbs-text
+set params splash=silent proxtui
+set media ${assets}/pbs
+set iso proxmox-backup-server_${pbs_ver}.iso
+goto boot-iso
+
+:pbs-debug
+set params splash=verbose proxdebug
+set media ${assets}/pbs
+set iso proxmox-backup-server_${pbs_ver}.iso
+goto boot-iso
+
+# --- Proxmox Datacenter Manager -------------------------------------------
+:pdm-normal
+set params splash=silent
+set media ${assets}/pdm
+set iso proxmox-datacenter-manager_${pdm_ver}.iso
+goto boot-iso
+
+:pdm-text
+set params splash=silent proxtui
+set media ${assets}/pdm
+set iso proxmox-datacenter-manager_${pdm_ver}.iso
+goto boot-iso
+
+:pdm-debug
+set params splash=verbose proxdebug
+set media ${assets}/pdm
+set iso proxmox-datacenter-manager_${pdm_ver}.iso
+goto boot-iso
+
+# --- boot stanzas ---------------------------------------------------------
+# The Proxmox ISO is handed to the initramfs as a second initrd at
+# /proxmox.iso; the initramfs mounts it and starts the installer.
+:boot-iso
+imgfree
+kernel ${media}/vmlinuz vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet ${params} initrd=initrd.magic || goto failed
+initrd ${media}/initrd || goto failed
+initrd ${media}/${iso} /proxmox.iso || goto failed
+boot || goto failed
+
+# Prepared automated install: kernel + initrd only, no separate ISO.
+:boot-auto
+imgfree
+kernel ${media}/vmlinuz vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet splash=silent initrd=initrd.magic || goto failed
+initrd ${media}/initrd.img || goto failed
+boot || goto failed
+
+# --- escape hatches -------------------------------------------------------
+:upstream
+chain --autofree https://boot.netboot.xyz/menu.ipxe || goto failed
+
+:failed
+echo ${cls}
+echo Boot failed. Returning to the menu in 10 seconds...
+sleep 10
+goto start

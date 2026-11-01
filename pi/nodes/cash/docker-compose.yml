@@ -1,10 +1,12 @@
 # cash node role containers (declarative; applied by pi/deploy.sh)
-# PXE boot server for the LAN (netboot.xyz + proxyDHCP). See docs/pxe-proxmox.md.
+# PXE boot server for the LAN (netboot.xyz + proxyDHCP + PVE answer files).
+# See docs/pxe-proxmox.md.
 name: pi-cash
 
 services:
   # netboot.xyz menu / web assets / webapp (TFTP is served by dnsmasq below,
-  # because Docker-NAT breaks TFTP data transfers).
+  # because Docker-NAT breaks TFTP data transfers). nginx serves /assets, which
+  # is bind-mounted so the mirrored Proxmox ISOs are reachable on :8090.
   netbootxyz:
     image: ghcr.io/netbootxyz/netbootxyz:latest
     container_name: netbootxyz
@@ -17,9 +19,10 @@ services:
       - TZ=America/Detroit
     ports:
       - "3000:3000"   # netboot.xyz webapp UI
-      - "8090:80"     # web assets
+      - "8090:80"     # web assets + mirrored Proxmox ISOs
     volumes:
       - /opt/netbootxyz-data/config:/config
+      - /opt/netbootxyz-data/assets:/assets
 
   # proxyDHCP + TFTP. Host networking is required for real DHCP/TFTP.
   dnsmasq-pxe:
@@ -33,3 +36,20 @@ services:
     volumes:
       - ./dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf:ro
       - /opt/netbootxyz-data/tftp:/tftp:ro
+
+  # Answer-file endpoint for Proxmox automated installation: the installer
+  # POSTs machine information and receives <mac>.toml, falling back to
+  # default.toml. Answer files are generated on the host, never committed.
+  pve-answers:
+    image: python:3-alpine
+    container_name: pve-answers
+    restart: unless-stopped
+    command: ["python3", "-u", "/srv/answer-server.py"]
+    environment:
+      - ANSWERS_DIR=/srv/answers
+      - PORT=8091
+    ports:
+      - "8091:8091"
+    volumes:
+      - ./netboot/answer-server.py:/srv/answer-server.py:ro
+      - /opt/netbootxyz-data/answers:/srv/answers:ro
