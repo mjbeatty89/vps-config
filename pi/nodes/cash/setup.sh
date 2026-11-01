@@ -203,6 +203,25 @@ if added:
 PY
 }
 
+# --- dnsmasq reload --------------------------------------------------------
+# dnsmasq.conf is bind-mounted, so `docker compose up -d` will NOT recreate the
+# container when only its contents change. Restart it when the file's hash moves.
+reload_dnsmasq_pxe() {
+  local conf="$NODE_DIR/dnsmasq/dnsmasq.conf"
+  local stamp="$DATA/.dnsmasq.conf.sha"
+  [[ -r $conf ]] || return 0
+  command -v docker >/dev/null || return 0
+  local now prev=""
+  now="$(sha256sum "$conf" | cut -d' ' -f1)"
+  [[ -s $stamp ]] && prev="$(cat "$stamp")"
+  if [[ $now != "$prev" ]]; then
+    if docker inspect dnsmasq-pxe >/dev/null 2>&1; then
+      docker restart dnsmasq-pxe >/dev/null && echo "  restarted dnsmasq-pxe (config changed)"
+    fi
+    printf '%s\n' "$now" > "$stamp"
+  fi
+}
+
 # --- answer files ----------------------------------------------------------
 generate_default_answer() {
   [[ -s "$ANSWERS/default.toml" ]] && return 0
@@ -229,6 +248,7 @@ extract_boot "$ASSETS/pdm/proxmox-datacenter-manager_${pdm_ver}.iso" "$ASSETS/pd
 build_auto
 generate_default_answer
 ensure_pxe_ports
+reload_dnsmasq_pxe
 
 # drop stale partial downloads and stale prepare-iso scratch dirs
 find "$ASSETS" -name '*.part' -mmin +60 -delete 2>/dev/null || true
