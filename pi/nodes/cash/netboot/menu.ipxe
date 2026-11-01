@@ -53,13 +53,13 @@ set iso proxmox-ve_${pve_ver}.iso
 goto boot-iso
 
 :pve-text
-set params splash=silent proxtui
+set params splash=silent proxmox-tui-mode vga=788
 set media ${assets}/pve
 set iso proxmox-ve_${pve_ver}.iso
 goto boot-iso
 
 :pve-debug
-set params splash=verbose proxdebug
+set params splash=verbose proxmox-debug vga=788
 set media ${assets}/pve
 set iso proxmox-ve_${pve_ver}.iso
 goto boot-iso
@@ -79,13 +79,13 @@ set iso proxmox-backup-server_${pbs_ver}.iso
 goto boot-iso
 
 :pbs-text
-set params splash=silent proxtui
+set params splash=silent proxmox-tui-mode vga=788
 set media ${assets}/pbs
 set iso proxmox-backup-server_${pbs_ver}.iso
 goto boot-iso
 
 :pbs-debug
-set params splash=verbose proxdebug
+set params splash=verbose proxmox-debug vga=788
 set media ${assets}/pbs
 set iso proxmox-backup-server_${pbs_ver}.iso
 goto boot-iso
@@ -98,13 +98,13 @@ set iso proxmox-datacenter-manager_${pdm_ver}.iso
 goto boot-iso
 
 :pdm-text
-set params splash=silent proxtui
+set params splash=silent proxmox-tui-mode vga=788
 set media ${assets}/pdm
 set iso proxmox-datacenter-manager_${pdm_ver}.iso
 goto boot-iso
 
 :pdm-debug
-set params splash=verbose proxdebug
+set params splash=verbose proxmox-debug vga=788
 set media ${assets}/pdm
 set iso proxmox-datacenter-manager_${pdm_ver}.iso
 goto boot-iso
@@ -114,7 +114,7 @@ goto boot-iso
 # /proxmox.iso; the initramfs mounts it and starts the installer.
 :boot-iso
 imgfree
-kernel ${media}/vmlinuz vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet ${params} initrd=initrd.magic || goto failed
+kernel ${media}/vmlinuz ramdisk_size=16777216 rw quiet initrd=initrd.magic ${params} || goto failed
 initrd ${media}/initrd || goto failed
 initrd ${media}/${iso} /proxmox.iso || goto failed
 boot || goto failed
@@ -122,8 +122,9 @@ boot || goto failed
 # Prepared automated install: kernel + initrd only, no separate ISO.
 :boot-auto
 imgfree
-kernel ${media}/vmlinuz vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet splash=silent initrd=initrd.magic || goto failed
+kernel ${media}/vmlinuz ramdisk_size=16777216 rw quiet initrd=initrd.magic splash=silent proxmox-start-auto-installer || goto failed
 initrd ${media}/initrd.img || goto failed
+initrd ${media}/proxmox-auto.iso /proxmox.iso || goto failed
 boot || goto failed
 
 # --- escape hatches -------------------------------------------------------
