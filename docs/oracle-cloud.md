@@ -85,6 +85,42 @@ Resized 2026-11-01 from `3 × 3 OCPU / 6 GB` to `2 × 2 OCPU / 12 GB` to fit the
 Always Free A1 allowance. The old workers and their boot volumes are terminated;
 the two current workers have two 50 GB boot volumes.
 
+## `homelab` namespace
+
+Applied 2026-11-01 from `k8s/oke/homelab/`:
+
+- Namespace `homelab`
+- ResourceQuota: 2 CPU / 8 GiB requests, 4 CPU / 16 GiB limits, 20 pods,
+  10 services, 4 PVCs, 20 GiB storage
+- LimitRange: 100m/128Mi default requests, 500m/512Mi default limits,
+  2 CPU / 4 GiB max per container
+
+## Tailscale operator
+
+The Tailscale operator Helm release was installed and then uninstalled because
+the existing `TS_OAUTH` client is under-scoped:
+
+```text
+creating operator authkey: calling actor does not have enough permissions (403)
+```
+
+Required OAuth client settings:
+
+- General > Services: Read + Write
+- Devices > Core: Read + Write
+- Keys > Auth Keys: Read + Write
+- Tag: `tag:k8s-operator`
+
+ACL changes already applied:
+
+- `tag:k8s-operator` owned by `group:dev`
+- `tag:k8s` owned by `tag:k8s-operator`
+- `autoApprovers.services.tag:k8s` → `tag:k8s`
+
+The `tailscale` namespace and `operator-oauth` secret are present; the Helm
+release is removed until the OAuth client is corrected. Helm is installed on
+cash at `/home/mjb/.local/bin/helm`.
+
 ## Guardrails
 
 - The nodes are **ARM64**. Use multi-arch images or build ARM64 images.
