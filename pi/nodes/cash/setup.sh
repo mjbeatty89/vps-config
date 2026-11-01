@@ -87,9 +87,7 @@ extract_boot() {  # extract_boot <iso-path> <target-dir>
   fi
   # Proxmox ISOs ship /boot/linux26 + /boot/initrd.img; plain Debian
   # installers ship /boot/vmlinuz-* + /boot/initrd.img-*.
-  vmlinuz="$(find "$tmp/boot" -maxdepth 1 \\
-               \( -name 'vmlinuz*' -o -name 'linux26' -o -name 'linux' \) \\
-               | sort -V | tail -1)"
+  vmlinuz="$(ls "$tmp/boot"/vmlinuz* "$tmp/boot"/linux26 "$tmp/boot"/linux 2>/dev/null | sort -V | tail -1)"
   initrd="$(find "$tmp/boot" -maxdepth 1 -name 'initrd*' | sort -V | tail -1)"
   if [[ -z "$vmlinuz" || -z "$initrd" ]]; then
     echo "  WARN: no kernel/initrd found in $iso" >&2
