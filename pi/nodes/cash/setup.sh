@@ -161,6 +161,48 @@ build_auto() {
   echo "  built PVE auto-install PXE artifacts in $out"
 }
 
+# --- firewall --------------------------------------------------------------
+# dnsmasq-pxe runs with network_mode: host, so 67/udp (DHCP), 69/udp (TFTP) and
+# 4011/udp (PXE boot server) hit the INPUT chain and need explicit ufw rules -
+# container-published ports only traverse FORWARD and would hide the problem.
+# 4011 is the one that bites: EFI clients get a redirect on 67 and the actual
+# boot file only after they ask the boot server on 4011.
+ensure_pxe_ports() {
+  command -v iptables >/dev/null || return 0
+  iptables -n -L ufw-user-input >/dev/null 2>&1 || return 0  # ufw not managing us
+  local p changed=0
+  for p in 67 69 4011; do
+    iptables -C ufw-user-input -p udp --dport "$p" -j ACCEPT 2>/dev/null && continue
+    iptables -I ufw-user-input 1 -p udp --dport "$p" -j ACCEPT
+    echo "  allowed ${p}/udp in ufw-user-input"
+    changed=1
+  done
+  [[ $changed -eq 1 ]] || return 0
+  # persist without `ufw reload` (it re-applies FORWARD DROP and breaks docker)
+  local rules=/etc/ufw/user.rules
+  [[ -w $rules ]] || return 0
+  cp -a "$rules" "$rules.bak-$(date +%Y%m%d-%H%M%S)"
+  python3 - "$rules" <<'PY'
+import sys
+path = sys.argv[1]
+src = open(path).read()
+anchor = "-A ufw-user-input -p tcp --dport 22 -j ACCEPT\n"
+if anchor not in src:
+    sys.exit(0)
+added = []
+for port in (67, 69, 4011):
+    rule = f"-A ufw-user-input -p udp --dport {port} -j ACCEPT\n"
+    if rule in src:
+        continue
+    tuple_line = (f"### tuple ### allow udp {port} 0.0.0.0/0 any 0.0.0.0/0 in\n")
+    src = src.replace(anchor, anchor + tuple_line + rule, 1)
+    added.append(str(port))
+if added:
+    open(path, "w").write(src)
+    print("  persisted in /etc/ufw/user.rules: " + " ".join(added))
+PY
+}
+
 # --- answer files ----------------------------------------------------------
 generate_default_answer() {
   [[ -s "$ANSWERS/default.toml" ]] && return 0
@@ -186,6 +228,7 @@ extract_boot "$ASSETS/pdm/proxmox-datacenter-manager_${pdm_ver}.iso" "$ASSETS/pd
 
 build_auto
 generate_default_answer
+ensure_pxe_ports
 
 # drop stale partial downloads and stale prepare-iso scratch dirs
 find "$ASSETS" -name '*.part' -mmin +60 -delete 2>/dev/null || true

@@ -138,3 +138,48 @@ old ISO + `vmlinuz`/`initrd`, and let the timer re-mirror.
 - netboot.xyz's own TFTP (Docker-NAT) is unreliable, which is why TFTP is served by
   the host-networked `dnsmasq-pxe` instead.
 - The mirrored ISOs are readable by anything on VLAN 30 at `http://10.1.30.8:8090/`.
+
+## Firewall and the port-4011 handshake
+
+`dnsmasq-pxe` uses `network_mode: host`, so its sockets sit on the **INPUT**
+chain — the container-published ports on `netbootxyz` only traverse FORWARD and
+would hide the problem. ufw must allow three UDP ports (also enforced by
+`ensure_pxe_ports()` in `setup.sh`):
+
+| Port | Service |
+|---|---|
+| 67/udp | DHCP / proxyDHCP |
+| 69/udp | TFTP (bootloaders + `menu.ipxe`) |
+| 4011/udp | PXE boot server (the one everyone forgets) |
+
+How EFI clients actually boot is a two-step dance, which is why 4011 matters:
+
+1. The client DISCOVERs. UniFi OFFERs an address; dnsmasq answers as a proxy with
+   `siaddr=10.1.30.8` and **no filename** (see `pxe_uefi_workaround()` in
+   `rfc2131.c` — for CSA ≥ 6 dnsmasq always redirects instead of answering).
+2. The client asks the boot server on **4011** and only there receives
+   `ACK file=netboot.xyz.efi siaddr=10.1.30.8`.
+
+Legacy BIOS clients (CSA 0) take the simpler path: dnsmasq offers a real PXE menu
+on port 67 (`pxe-prompt` + `pxe-service=...x86PC`).
+
+Two consequences worth remembering before editing `dnsmasq.conf`:
+
+- `dhcp-boot` is **ignored** in proxy mode; boot files come from `pxe-service`.
+- `dhcp-match=set:tag,option:client-arch,N` never fires in the proxy path — the
+  tag filter drops everything but the interface tag — so arch-tagged
+  `dhcp-boot`/`pxe-service=tag:...` lines cannot be used to tell BIOS from UEFI.
+  Use `pxe-service` CSA names instead.
+
+Verify from another host on VLAN 30 (the raw-socket probes are in
+`/tmp/opencode` on `cash`, run from `ai-server` because a broadcast sent from
+`cash` never loops back to `cash`'s own dnsmasq):
+
+```
+# port 67 half: expect an OFFER from 10.1.30.8 with siaddr and no file
+sudo python3 pxe-dhcp-probe.py enp8s0 8 7
+# port 4011 half: expect "ACK ... file=netboot.xyz.efi". ciaddr must be an
+# address the probe host owns, so the ACK is unicast and ARP resolves.
+sudo python3 pxe-4011-probe.py enp8s0 8 7 <own-ip-on-vlan30>
+```
+
