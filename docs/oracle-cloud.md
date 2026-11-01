@@ -68,10 +68,11 @@ The kubeconfig exec plugin uses the absolute OCI CLI path and
 | VCN | dedicated OKE VCN |
 | CNI | VCN-native IP (`OCI_VCN_IP_NATIVE`) |
 | Node pool | `pool1` |
-| Nodes | 3 × `VM.Standard.A1.Flex`, all Ready |
-| Per node | ~3 CPU / 5.7 GiB / 36 GiB ephemeral |
+| Nodes | **2 × `VM.Standard.A1.Flex`, both Ready** |
+| Per node | **2 OCPU / 12 GB / 36 GiB ephemeral** |
 | OS/runtime | Oracle Linux 8.10 aarch64, CRI-O 1.34 |
 | Pods per node | 31 |
+| Always Free posture | **4 OCPU / 24 GB total**, 2 × 50 GB boot = 100 GB; Basic cluster; no LB/block volumes |
 | Storage classes | `oci-bv` (default), `oci` |
 | Ingress controller | none |
 | Metrics server | not observed |
@@ -79,6 +80,10 @@ The kubeconfig exec plugin uses the absolute OCI CLI path and
 
 Access is **cluster-admin** for the configured OCI user. The cluster is 233 days
 old and has no non-system namespaces.
+
+Resized 2026-11-01 from `3 × 3 OCPU / 6 GB` to `2 × 2 OCPU / 12 GB` to fit the
+Always Free A1 allowance. The old workers and their boot volumes are terminated;
+the two current workers have two 50 GB boot volumes.
 
 ## Guardrails
 
