@@ -73,19 +73,35 @@ scrape_configs:
     static_configs:
       - targets:
           # VPS-hosted services behind Caddy
-          - https://dash.aadd.rocks
           - https://n8n.aadd.rocks
           - https://status.aadd.rocks
           - https://portainer.aadd.rocks
           - https://vault.aadd.rocks
           - https://ntfy.aadd.rocks
           - https://git.aadd.rocks
-          - https://pdf.aadd.rocks
           - https://notes.aadd.rocks
           - https://matt.aadd.rocks
           # Home services reached over Tailscale
   # (resume.aadd.rocks / storage-resume.aadd.rocks removed 2026-10-15 - stale cash routes)
           - https://photoprism.aadd.rocks
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  # Auth-gated public routes: a 401 proves that Caddy/the app is reachable and
+  # still enforcing authentication. Do not treat auth as downtime.
+  - job_name: blackbox-auth-required
+    metrics_path: /probe
+    params:
+      module: [http_auth_required]
+    static_configs:
+      - targets:
+          - https://dash.aadd.rocks
+          - https://pdf.aadd.rocks
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target

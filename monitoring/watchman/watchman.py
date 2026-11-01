@@ -112,8 +112,11 @@ def current_problems() -> dict[str, str]:
         for r in prom_query(f'max_over_time(up{{job="{job}"}}[{window}]) == 0'):
             m = r["metric"]
             problems[f"{job}:{m.get('instance','?')}"] = f"down for {window}"
+    # Restrict this query to active series. Without `up == 1`, Prometheus can
+    # retain a stale failed probe_success series after a target is moved to a
+    # different scrape job, causing false alerts until retention expires.
     for r in prom_query(
-        f'max_over_time(probe_success[{FAILURE_WINDOW}]) == 0'
+        f'max_over_time(probe_success[{FAILURE_WINDOW}]) == 0 and on(job, instance) up == 1'
     ):
         m = r["metric"]
         problems[f"probe:{m.get('instance','?')}"] = f"probe failing for {FAILURE_WINDOW}"
