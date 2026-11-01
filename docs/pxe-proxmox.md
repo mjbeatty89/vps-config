@@ -171,15 +171,17 @@ Two consequences worth remembering before editing `dnsmasq.conf`:
   `dhcp-boot`/`pxe-service=tag:...` lines cannot be used to tell BIOS from UEFI.
   Use `pxe-service` CSA names instead.
 
-Verify from another host on VLAN 30 (the raw-socket probes are in
-`/tmp/opencode` on `cash`, run from `ai-server` because a broadcast sent from
-`cash` never loops back to `cash`'s own dnsmasq):
+Verify with the raw-socket probes in
+`pi/nodes/cash/netboot/tools/`, run from **another** host on VLAN 30 (a
+broadcast sent from `cash` never loops back to `cash`'s own dnsmasq, and
+`macvtap` is not available here, so QEMU smoke tests are not an option):
 
 ```
-# port 67 half: expect an OFFER from 10.1.30.8 with siaddr and no file
-sudo python3 pxe-dhcp-probe.py enp8s0 8 7
+# port 67 half: expect an OFFER from 10.1.30.8 carrying siaddr and no file
+sudo python3 pxe-dhcp-probe.py <iface> 8 7
 # port 4011 half: expect "ACK ... file=netboot.xyz.efi". ciaddr must be an
-# address the probe host owns, so the ACK is unicast and ARP resolves.
-sudo python3 pxe-4011-probe.py enp8s0 8 7 <own-ip-on-vlan30>
+# address the probe host owns, so the ACK is unicast and ARP resolves;
+# 0.0.0.0 makes dnsmasq broadcast, which the probe host never sees.
+sudo python3 pxe-4011-probe.py <iface> 8 7 <own-ip-on-vlan30>
 ```
 
