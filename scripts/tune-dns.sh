@@ -25,8 +25,9 @@ cp -a "$CFG" "$(dirname "$CFG")/AdGuardHome.yaml.bak.$(date +%s)"
 
 echo "==> editing AdGuardHome.yaml (schema v0.107)"
 python3 - "$CFG" <<'PY'
-import sys, yaml
+import os, sys, yaml
 p = sys.argv[1]
+st = os.stat(p)
 d = yaml.safe_load(open(p))
 
 # Upstream: local Unbound only; DNSSEC validated there.
@@ -112,6 +113,8 @@ clients.append({
 })
 
 yaml.safe_dump(d, open(p, "w"), sort_keys=False, allow_unicode=True)
+os.chmod(p, st.st_mode)
+os.chown(p, st.st_uid, st.st_gid)
 print(f"  filters={len(flt)} rewrites={len(rw)} user_rules={len(rules)} clients={len(clients)}")
 print(f"  ratelimit={dns['ratelimit']} cache={dns['cache_size']} blocking_mode={fil['blocking_mode']}")
 PY
