@@ -47,6 +47,10 @@
       icon: uptime-kuma
       description: Kuma direct
       href: https://oracle.manee-frog.ts.net:3001
+  - Scraparr:
+      icon: prometheus
+      description: Arr metrics dashboard; authenticated exporter on unRAID
+      href: https://oracle.manee-frog.ts.net:3002/d/unraid-arr
 - Apps:
   - n8n:
       icon: n8n
@@ -161,6 +165,10 @@
       icon: bazarr
       description: Subtitles (Unraid)
       href: http://100.76.50.59:6767
+  - Cleanuparr:
+      icon: cleanuparr
+      description: Failed/stalled download recovery; dry-run enabled
+      href: http://10.1.30.16:11011
 - Home (over Tailscale):
   - PhotoPrism:
       icon: photoprism

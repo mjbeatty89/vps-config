@@ -69,6 +69,9 @@ scrape_configs:
   # Exporter runs on the Unraid arr host and is scraped over Tailscale.
   # Default Scraparr port is 7100; change the target if the container maps it.
   - job_name: scraparr
+    authorization:
+      type: Bearer
+      credentials_file: /run/secrets/scraparr-token
     scrape_interval: 60s
     scrape_timeout: 10s
     metrics_path: /metrics

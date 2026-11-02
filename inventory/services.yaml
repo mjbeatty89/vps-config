@@ -659,3 +659,37 @@ services:
   - media
   - tailnet
   updated_at: '2026-10-23'
+- id: cleanuparr
+  added_at: '2026-11-02'
+  added_by: codex
+  name: Cleanuparr
+  group: Media
+  href: http://10.1.30.16:11011
+  icon: cleanuparr
+  description: Failed/stalled download recovery; dry-run enabled
+  status: active
+  owner: mjb
+  source:
+    host: unraid
+    kind: docker
+    ref: cleanuparr
+  tags:
+  - lan
+  updated_at: '2026-11-02'
+- id: scraparr
+  added_at: '2026-11-02'
+  added_by: codex
+  name: Scraparr
+  group: Monitoring
+  href: https://oracle.manee-frog.ts.net:3002/d/unraid-arr
+  icon: prometheus
+  description: Arr metrics dashboard; authenticated exporter on unRAID
+  status: active
+  owner: mjb
+  source:
+    host: unraid
+    kind: docker
+    ref: scraparr
+  tags:
+  - tailnet
+  updated_at: '2026-11-02'
