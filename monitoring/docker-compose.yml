@@ -42,8 +42,8 @@ services:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
       GF_USERS_ALLOW_SIGN_UP: "false"
-      GF_SERVER_ROOT_URL: ${GRAFANA_ROOT_URL:-https://grafana.aadd.rocks}
-      GF_SERVER_DOMAIN: ${GRAFANA_DOMAIN:-grafana.aadd.rocks}
+      GF_SERVER_ROOT_URL: ${GRAFANA_ROOT_URL:-https://oracle.manee-frog.ts.net:3002}
+      GF_SERVER_DOMAIN: ${GRAFANA_DOMAIN:-oracle.manee-frog.ts.net}
       # Consumed by provisioning/alerting/contactpoints.yml
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_API}
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
