@@ -144,7 +144,7 @@ def docker_proposals(name: str, target: str, base_url: str | None) -> list[dict[
             "tags": sorted({x.strip() for x in hp.get("tags", "").split(",") if x.strip()}),
         }
         if hp.get("health"):
-            proposal["widget"] = {"type": "siteMonitor", "url": hp["health"]}
+            proposal["site_monitor"] = hp["health"]
         if hp.get("tailnet", "").lower() in ("1", "true", "yes"):
             proposal.setdefault("tags", []).append("tailnet")
         proposals.append({k: v for k, v in proposal.items() if v not in (None, "", [])})
@@ -210,7 +210,7 @@ def proxmox_proposals(name: str, target: str, base_url: str | None) -> list[dict
             "tags": sorted({x.strip() for x in (hp.get("tags") or tags).split(",") if x.strip()}),
         }
         if hp.get("health"):
-            proposal["widget"] = {"type": "siteMonitor", "url": hp["health"]}
+            proposal["site_monitor"] = hp["health"]
         proposals.append({k: v for k, v in proposal.items() if v not in (None, "", [])})
     return proposals
 

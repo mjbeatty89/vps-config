@@ -41,7 +41,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--group", default="Services", help="Homepage group")
     p.add_argument("--icon", help="Homepage icon name")
     p.add_argument("--description")
-    p.add_argument("--health", help="health/status URL for siteMonitor")
+    p.add_argument("--health", help="health/status URL for Homepage siteMonitor")
     p.add_argument("--widget-json", help="explicit Homepage widget JSON")
     p.add_argument("--source-host", help="vps, pve, pvevcm, cash, ai-server, unraid, ...")
     p.add_argument(
@@ -95,7 +95,7 @@ def main() -> int:
     if a.widget_json:
         data["widget"] = json.loads(a.widget_json)
     elif a.health:
-        data["widget"] = {"type": "siteMonitor", "url": a.health}
+        data["site_monitor"] = a.health
 
     REGISTRY.parent.mkdir(parents=True, exist_ok=True)
     with (REGISTRY.parent / ".services.lock").open("w") as lock:

@@ -58,9 +58,7 @@ services:
     tags: [monitoring, tailnet]
     docker_server: vps          # optional Homepage Docker integration
     docker_container: grafana
-    widget:
-      type: siteMonitor
-      url: http://grafana:3000/login
+    site_monitor: http://grafana:3000/login
 ```
 
 Rules:
@@ -69,7 +67,12 @@ Rules:
 - `status: pending` keeps a service out of the dashboard until a URL exists.
 - `href` must be a browser URL (http/https) for active entries.
 - `source` records where it runs; `added_by` records which agent/human added it.
-- `widget` is passed through to Homepage; `--health` creates a `siteMonitor`.
+- `site_monitor` is a health URL; the renderer emits Homepage's service-level
+  `siteMonitor` property. `--health` populates it.
+- `widget` is passed through to Homepage for real widgets (Prometheus, Sonarr,
+  etc.). Do **not** use `type: siteMonitor` as a widget; that produces
+  “missing widget type: siteMonitor”. The renderer still accepts the legacy
+  shape and translates it.
 - Only set `docker_server`/`docker_container` when that server is actually defined
   in `monitoring/homepage/config/docker.yaml`. Remote Docker hosts such as Unraid
   are link-only; otherwise Homepage's `/api/docker/statuses` errors on the missing

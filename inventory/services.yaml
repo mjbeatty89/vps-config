@@ -43,9 +43,7 @@ services:
   added_at: '2026-10-23'
   tags:
   - public
-  widget:
-    type: siteMonitor
-    url: https://dash.aadd.rocks
+  site_monitor: https://dash.aadd.rocks
 - id: uptime-kuma
   name: Uptime Kuma
   group: Gateway
@@ -60,9 +58,7 @@ services:
   added_at: '2026-10-23'
   tags:
   - public
-  widget:
-    type: siteMonitor
-    url: https://status.aadd.rocks
+  site_monitor: https://status.aadd.rocks
 - id: cloudflare
   name: Cloudflare
   group: Gateway
@@ -105,9 +101,7 @@ services:
   added_at: '2026-10-23'
   tags:
   - tailnet
-  widget:
-    type: siteMonitor
-    url: http://grafana:3000/login
+  site_monitor: http://grafana:3000/login
 - id: prometheus
   name: Prometheus
   group: Monitoring
@@ -122,9 +116,7 @@ services:
   added_at: '2026-10-23'
   tags:
   - tailnet
-  widget:
-    type: siteMonitor
-    url: http://prometheus:9090/-/ready
+  site_monitor: http://prometheus:9090/-/ready
 - id: netdata
   name: Netdata
   group: Monitoring
@@ -139,9 +131,7 @@ services:
   added_at: '2026-10-23'
   tags:
   - tailnet
-  widget:
-    type: siteMonitor
-    url: https://oracle.manee-frog.ts.net:19999
+  site_monitor: https://oracle.manee-frog.ts.net:19999
 - id: uptime-kuma-tailnet
   name: Uptime Kuma (tailnet)
   group: Monitoring
@@ -172,9 +162,7 @@ services:
   added_at: '2026-10-23'
   tags:
   - public
-  widget:
-    type: siteMonitor
-    url: https://n8n.aadd.rocks
+  site_monitor: https://n8n.aadd.rocks
   docker_server: vps
   docker_container: n8n
 - id: gitea
@@ -193,9 +181,7 @@ services:
   added_at: '2026-10-23'
   tags:
   - public
-  widget:
-    type: siteMonitor
-    url: https://git.aadd.rocks
+  site_monitor: https://git.aadd.rocks
   docker_server: vps
   docker_container: gitea
 - id: vaultwarden
@@ -214,9 +200,7 @@ services:
   added_at: '2026-10-23'
   tags:
   - public
-  widget:
-    type: siteMonitor
-    url: https://vault.aadd.rocks
+  site_monitor: https://vault.aadd.rocks
   docker_server: vps
   docker_container: vaultwarden
 - id: portainer
@@ -235,9 +219,7 @@ services:
   added_at: '2026-10-23'
   tags:
   - public
-  widget:
-    type: siteMonitor
-    url: https://portainer.aadd.rocks
+  site_monitor: https://portainer.aadd.rocks
   docker_server: vps
   docker_container: portainer
 - id: ntfy
@@ -256,9 +238,7 @@ services:
   added_at: '2026-10-23'
   tags:
   - public
-  widget:
-    type: siteMonitor
-    url: https://ntfy.aadd.rocks
+  site_monitor: https://ntfy.aadd.rocks
   docker_server: vps
   docker_container: ntfy
 - id: stirling-pdf
@@ -277,9 +257,7 @@ services:
   added_at: '2026-10-23'
   tags:
   - public
-  widget:
-    type: siteMonitor
-    url: https://pdf.aadd.rocks
+  site_monitor: https://pdf.aadd.rocks
   docker_server: vps
   docker_container: stirling-pdf
 - id: memos
@@ -298,9 +276,7 @@ services:
   added_at: '2026-10-23'
   tags:
   - public
-  widget:
-    type: siteMonitor
-    url: https://notes.aadd.rocks
+  site_monitor: https://notes.aadd.rocks
   docker_server: vps
   docker_container: memos
 - id: termix
@@ -352,9 +328,7 @@ services:
   added_at: '2026-10-23'
   tags:
   - public
-  widget:
-    type: siteMonitor
-    url: https://photoprism.aadd.rocks
+  site_monitor: https://photoprism.aadd.rocks
 - id: home-assistant
   name: Home Assistant
   group: Home (over Tailscale)
@@ -400,9 +374,7 @@ services:
   tags:
   - git
   - tailnet
-  widget:
-    type: siteMonitor
-    url: http://10.1.30.23:3000/
+  site_monitor: http://10.1.30.23:3000/
   updated_at: '2026-10-23'
 - id: omniroute
   added_at: '2026-10-23'
@@ -421,9 +393,7 @@ services:
   tags:
   - ai
   - tailnet
-  widget:
-    type: siteMonitor
-    url: http://10.1.30.20:20128/health
+  site_monitor: http://10.1.30.20:20128/health
   updated_at: '2026-10-23'
 - id: pve
   added_at: '2026-10-23'

@@ -103,8 +103,16 @@ def _homepage_props(service: dict[str, Any]) -> dict[str, Any]:
         props["server"] = service["docker_server"]
     if service.get("docker_container"):
         props["container"] = service["docker_container"]
-    if service.get("widget"):
-        props["widget"] = service["widget"]
+    if service.get("site_monitor"):
+        props["siteMonitor"] = service["site_monitor"]
+    widget = service.get("widget")
+    if widget:
+        # Homepage's site monitor is a service-level property, not a widget
+        # type. Accept the older registry shape and translate it on render.
+        if widget.get("type") == "siteMonitor" and widget.get("url"):
+            props["siteMonitor"] = widget["url"]
+        else:
+            props["widget"] = widget
     return props
 
 
