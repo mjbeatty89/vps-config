@@ -131,7 +131,7 @@ services:
       - GITEA__server__SSH_PORT=2222
       - GITEA__server__SSH_LISTEN_PORT=22
       - GITEA__database__DB_TYPE=sqlite3
-      - GITEA__security__INSTALL_LOCK=false
+      - GITEA__security__INSTALL_LOCK=true
       - TZ=America/Detroit
     volumes:
       - /opt/docker/gitea:/data
