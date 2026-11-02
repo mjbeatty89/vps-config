@@ -181,6 +181,18 @@ Unraid details:
 ## 8. Monitoring and backups
 
 - Uptime Kuma + Prometheus + Grafana + Netdata on the VPS.
+
+### Monitoring stack (VPS)
+- **Grafana:** `https://oracle.manee-frog.ts.net:3002` (tailnet-only)
+- **Prometheus:** `https://oracle.manee-frog.ts.net:9090` (tailnet-only)
+- **Compose:** `monitoring/docker-compose.yml`; Prometheus config is
+  `monitoring/prometheus/prometheus.yml`.
+- **Grafana datasource:** provisioned as `Prometheus` → `http://prometheus:9090`
+  (`monitoring/grafana/provisioning/datasources/prometheus.yml`).
+- **Scraparr (*arr exporter):** default port `7100`. The `scraparr` job targets
+  `100.76.50.59:7100/metrics` over Tailscale, so the Unraid container must publish
+  `7100` on the host/tailnet. Suggested dashboard: Grafana ID **22934**.
+  Check the target at `https://oracle.manee-frog.ts.net:9090/targets`.
 - PBS backups from `pve` and `pvevcm` at 02:00.
 - PBS `truenas-vms` is inactive because TrueNAS LAN TCP is broken; tailnet NFS works.
 - Hetzner Storage Box `hetz-vps` (`u696446.your-storagebox.de`, 1 TB, Helsinki)

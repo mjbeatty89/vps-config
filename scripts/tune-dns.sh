@@ -1,19 +1,27 @@
 #!/usr/bin/env bash
-# tune-dns.sh — apply the recommended AdGuard + Unbound config on dnspi.
+# tune-dns.sh — apply the recommended AdGuard + Unbound config.
 #
-# YAML-based: no AdGuard password needed. Run ON dnspi as root:
+# YAML-based: no AdGuard password needed. Run ON the resolver as root.
+# Defaults target dnspi:
 #   ssh root@dnspi 'bash -s' < scripts/tune-dns.sh
+#
+# Secondary resolver (dns2) has a different path/unit. TUNE_UNBOUND=0 skips the
+# Unbound rewrite if you do not want to replace its current tuning:
+#   ssh root@10.1.30.6 'ADGUARD_CONFIG=/opt/AdGuardHome/AdGuardHome.yaml \
+#     ADGUARD_UNIT=AdGuardHome.service TUNE_UNBOUND=0 bash -s' < scripts/tune-dns.sh
 #
 # Note: AdGuard recompiles filter lists on first start after a change, so :53 can
 # take ~25-30s to bind. The script waits for it.
 set -euo pipefail
 
-CFG=/mnt/dietpi_userdata/adguardhome/AdGuardHome.yaml
+CFG=${ADGUARD_CONFIG:-/mnt/dietpi_userdata/adguardhome/AdGuardHome.yaml}
+UNIT=${ADGUARD_UNIT:-adguardhome}
+TUNE_UNBOUND=${TUNE_UNBOUND:-1}
 [[ -f "$CFG" ]] || { echo "config not found: $CFG"; exit 1; }
 
 echo "==> stopping AdGuard + backing up"
-systemctl stop adguardhome
-cp -a "$CFG" "/root/AdGuardHome.yaml.bak.$(date +%s)"
+systemctl stop "$UNIT"
+cp -a "$CFG" "$(dirname "$CFG")/AdGuardHome.yaml.bak.$(date +%s)"
 
 echo "==> editing AdGuardHome.yaml (schema v0.107)"
 python3 - "$CFG" <<'PY'
@@ -27,6 +35,15 @@ dns["upstream_dns"] = ["127.0.0.1:5335"]
 dns["upstream_dns_file"] = ""
 dns["bootstrap_dns"] = ["1.1.1.1", "9.9.9.9"]
 dns["enable_dnssec"] = False
+
+# Performance: avoid per-client drops, hold a larger cache, and serve stale
+# entries while refreshing them.
+dns["ratelimit"] = 100
+dns["cache_size"] = 64 * 1024 * 1024
+dns["cache_optimistic"] = True
+
+# Keep the query log useful without growing to hundreds of MB.
+d.setdefault("querylog", {})["interval"] = "7d"
 
 # Blocklists (balanced).
 flt = d.setdefault("filters", [])
@@ -58,7 +75,7 @@ d["user_rules"] = rules
 
 # Split-horizon rewrites live under filtering.rewrites in v0.107.
 fil = d.setdefault("filtering", {})
-fil["blocking_mode"] = "default"
+fil["blocking_mode"] = "nxdomain"
 rw = fil.get("rewrites") or []
 have = {(x.get("domain"), x.get("answer")) for x in rw}
 for dom, ans in [("pve.home", "10.1.30.13"), ("vcm.home", "10.1.30.14"),
@@ -69,19 +86,46 @@ for dom, ans in [("pve.home", "10.1.30.13"), ("vcm.home", "10.1.30.14"),
         rw.append({"domain": dom, "answer": ans, "enabled": True})
 fil["rewrites"] = rw
 
-yaml.safe_dump(d, open(p, "w"), sort_keys=False)
-print(f"  filters={len(flt)} rewrites={len(rw)} user_rules={len(rules)}")
+# Per-client policy: Mal's phone gets no DNS filtering so anti-adblock popups
+# stop; browser-side uBlock Origin is the cosmetic/anti-adblock layer.
+cl = d.get("clients")
+if not isinstance(cl, dict):
+    cl = {}
+    d["clients"] = cl
+clients = cl.setdefault("persistent", [])
+clients[:] = [c for c in clients if c.get("name") != "Mal-phone"]
+clients.append({
+    "name": "Mal-phone",
+    "ids": ["10.1.30.123"],
+    "use_global_settings": False,
+    "filtering_enabled": False,
+    "parental_enabled": False,
+    "safebrowsing_enabled": False,
+    "safe_search": {
+        "enabled": False, "bing": True, "duckduckgo": True, "ecosia": True,
+        "google": True, "pixabay": True, "yandex": True, "youtube": True,
+    },
+    "upstreams": [],
+    "tags": [],
+    "ignore_querylog": False,
+    "ignore_statistics": False,
+})
+
+yaml.safe_dump(d, open(p, "w"), sort_keys=False, allow_unicode=True)
+print(f"  filters={len(flt)} rewrites={len(rw)} user_rules={len(rules)} clients={len(clients)}")
+print(f"  ratelimit={dns['ratelimit']} cache={dns['cache_size']} blocking_mode={fil['blocking_mode']}")
 PY
 
 echo "==> starting AdGuard (waiting for :53)"
-systemctl start adguardhome
+systemctl start "$UNIT"
 for _ in $(seq 1 60); do
   ss -lun 2>/dev/null | grep -q ':53 ' && break
   sleep 1
 done
 
-echo "==> tuning Unbound"
-cat > /etc/unbound/unbound.conf.d/99-aadd-tuning.conf <<'CONF'
+if [[ "$TUNE_UNBOUND" == "1" ]]; then
+  echo "==> tuning Unbound"
+  cat > /etc/unbound/unbound.conf.d/99-aadd-tuning.conf <<'CONF'
 server:
     prefetch: yes
     prefetch-key: yes
@@ -100,11 +144,15 @@ server:
     so-rcvbuf: 1m
     num-threads: 2
 CONF
-unbound-checkconf
-systemctl restart unbound
+  unbound-checkconf
+  systemctl restart unbound
+else
+  echo "==> skipping Unbound tuning (TUNE_UNBOUND=$TUNE_UNBOUND)"
+fi
 
 echo "==> verify"
 for h in example.com doubleclick.net pve.home; do
-  printf "  %-18s " "$h"; dig +short +time=4 @127.0.0.1 "$h" | head -1
+  printf "  %-18s " "$h"
+  dig +noall +comments +time=4 @127.0.0.1 "$h" | grep -o 'status: [A-Z]*' | head -1
 done
 echo "done."

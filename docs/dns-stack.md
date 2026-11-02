@@ -13,9 +13,11 @@ clients → AdGuard :53 (block, cache, rewrites) → Unbound 127.0.0.1:5335 (rec
 | Upstream DNS | **`127.0.0.1:5335` only** | all lookups recurse through your Unbound; no third-party DoH |
 | Bootstrap DNS | `1.1.1.1`, `9.9.9.9` | only for resolving upstream hostnames (unused with a plain IP upstream) |
 | DNSSEC | **off in AdGuard** | Unbound validates; double-validation causes confusing SERVFAILs |
-| Blocking mode | `default` (0.0.0.0 / ::) | standard; easy to spot in logs |
+| Blocking mode | `nxdomain` | fast failure for blocked names; avoids clients dialing `0.0.0.0` |
+| Rate limit | `100` per client | normal bursty client traffic is not dropped |
+| Cache | 64 MB, optimistic on | fewer upstream round-trips; serve stale during resolver hiccups |
 | EDNS client subnet | off | privacy |
-| Query log / statistics | on | needed for tuning + debugging |
+| Query log / statistics | on, 7-day retention | enough for tuning without a 440 MB log |
 | DHCP | off | UniFi handles DHCP |
 
 > **Schema note (v0.107):** rewrites live under `filtering.rewrites`, custom rules
@@ -45,6 +47,22 @@ Add as custom filtering rules (`@@` = allow):
 @@||time.windows.com^
 ```
 
+### Per-client policy
+Mal's phone is a persistent client on **both** resolvers:
+
+| Field | Value |
+|---|---|
+| Client | `Mal-phone` |
+| ID | `10.1.30.123` |
+| Global settings | off |
+| Filtering | **off** |
+
+This keeps strict DNS filtering for the rest of the house while avoiding
+anti-adblock popups on her phone. Use **uBlock Origin** in the browser for
+cosmetic ad hiding and anti-adblock handling; DNS filtering cannot hide those
+popups. A DHCP reservation for `10.1.30.123` (or updating the client ID if the
+phone changes address) keeps the policy attached.
+
 ### Rewrites (split-horizon)
 `pve.home→10.1.30.13`, `vcm.home→10.1.30.14`, `cash.home→10.1.30.8`,
 `dnspi.home→10.1.30.100`, `dockernodepi.home→10.1.30.101`, `ha.home→10.1.30.10`,
@@ -62,13 +80,31 @@ Managed via `/etc/unbound/unbound.conf.d/99-aadd-tuning.conf`:
 ## Verify
 ```bash
 dig +short @10.1.30.100 example.com          # resolves via unbound
-dig +short @10.1.30.100 doubleclick.net      # 0.0.0.0 (blocked)
+dig +short @10.1.30.100 doubleclick.net      # empty (NXDOMAIN)
+dig +noall +comments @10.1.30.100 doubleclick.net | grep status  # NXDOMAIN
 dig +short @10.1.30.100 pve.home             # 10.1.30.13
+dig +short @10.1.30.6 example.com            # secondary resolver
 dig +short @127.0.0.1 -p 5335 example.com    # unbound directly
 unbound-checkconf                            # config valid
 ```
+
+Check the client policy by querying from Mal's phone, then looking for
+`10.1.30.123` in the AdGuard query log; filtered requests should show as not
+blocked.
 
 ## Maintenance
 - Filters auto-update daily (AdGuard "Filters update interval").
 - False positive → add a custom allow rule (`@@||domain^`) and re-test.
 - Watch the Query Log in the AdGuard UI; it's the single best tuning tool.
+- Keep both resolvers aligned; DHCP hands out both addresses.
+
+## Rollout notes
+| Host | Config | systemd unit |
+|---|---|---|
+| dnspi | `/mnt/dietpi_userdata/adguardhome/AdGuardHome.yaml` | `adguardhome.service` |
+| dns2 | `/opt/AdGuardHome/AdGuardHome.yaml` | `AdGuardHome.service` |
+
+Apply changes with the unit stopped: AdGuard rewrites the YAML on startup and
+will overwrite live edits. Keep a timestamped backup next to the config
+(`AdGuardHome.yaml.bak.YYYYMMDD-HHMMSS`). After a restart, allow roughly 20–30
+seconds for the filter engine to load before port 53 starts listening.
