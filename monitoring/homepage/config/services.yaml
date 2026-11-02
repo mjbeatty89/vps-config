@@ -95,12 +95,6 @@
       icon: terminal
       description: Web terminal (pve LXC 121)
       href: https://ai-server.manee-frog.ts.net:8086
-  - Heimdall:
-      icon: heimdall
-      description: Legacy dashboard
-      href: https://dash.aadd.rocks
-      server: vps
-      container: heimdall
   - Forgejo:
       icon: forgejo
       description: Git hosting (pve LXC 122)

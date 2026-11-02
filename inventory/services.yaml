@@ -296,24 +296,6 @@ services:
   tags:
   - tailnet
   updated_at: '2026-10-23'
-- id: heimdall
-  name: Heimdall
-  group: Apps
-  href: https://dash.aadd.rocks
-  icon: heimdall
-  description: Legacy dashboard
-  status: active
-  source:
-    host: vps
-    kind: docker
-    ref: heimdall
-  owner: mjb
-  added_by: migration-homepage
-  added_at: '2026-10-23'
-  tags:
-  - public
-  docker_server: vps
-  docker_container: heimdall
 - id: photoprism
   name: PhotoPrism
   group: Home (over Tailscale)
