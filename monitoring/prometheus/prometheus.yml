@@ -65,6 +65,19 @@ scrape_configs:
       - target_label: __address__
         replacement: pve-exporter:9221
 
+  # ── Scraparr (*arr exporter on Unraid) ────────────────────────────────────
+  # Exporter runs on the Unraid arr host and is scraped over Tailscale.
+  # Default Scraparr port is 7100; change the target if the container maps it.
+  - job_name: scraparr
+    scrape_interval: 60s
+    scrape_timeout: 10s
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["100.76.50.59:7100"]
+        labels:
+          instance: unraid-arr
+          site: home
+
   # ── Blackbox: HTTP probes of public Caddy vhosts ──────────────────────────
   - job_name: blackbox-http
     metrics_path: /probe
