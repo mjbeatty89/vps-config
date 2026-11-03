@@ -165,25 +165,6 @@ services:
   site_monitor: https://n8n.aadd.rocks
   docker_server: vps
   docker_container: n8n
-- id: gitea
-  name: Gitea
-  group: Apps
-  href: https://git.aadd.rocks
-  icon: gitea
-  description: Git hosting
-  status: active
-  source:
-    host: vps
-    kind: docker
-    ref: gitea
-  owner: mjb
-  added_by: migration-homepage
-  added_at: '2026-10-23'
-  tags:
-  - public
-  site_monitor: https://git.aadd.rocks
-  docker_server: vps
-  docker_container: gitea
 - id: vaultwarden
   name: Vaultwarden
   group: Apps

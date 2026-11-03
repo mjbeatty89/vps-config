@@ -48,11 +48,6 @@ ntfy.aadd.rocks {
 	reverse_proxy localhost:8095
 }
 
-# ── Git Hosting (Gitea) ───────────────────────────────────────────────────
-git.aadd.rocks {
-	reverse_proxy localhost:3000
-}
-
 # ── PDF Tools (Stirling PDF) ──────────────────────────────────────────────
 pdf.aadd.rocks {
 	reverse_proxy localhost:8083

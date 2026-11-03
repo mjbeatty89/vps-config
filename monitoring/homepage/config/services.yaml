@@ -49,13 +49,6 @@
       server: vps
       container: n8n
       siteMonitor: https://n8n.aadd.rocks
-  - Gitea:
-      icon: gitea
-      description: Git hosting
-      href: https://git.aadd.rocks
-      server: vps
-      container: gitea
-      siteMonitor: https://git.aadd.rocks
   - Vaultwarden:
       icon: vaultwarden
       description: Password vault

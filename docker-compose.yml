@@ -118,27 +118,6 @@ services:
     ports:
       - "127.0.0.1:8095:80"
 
-  # ── Git Hosting (Gitea) ───────────────────────────────────────────────────
-  # Self-hosted code backup — stays up independently of home infra
-  gitea:
-    image: gitea/gitea:latest
-    container_name: gitea
-    restart: unless-stopped
-    environment:
-      - GITEA__server__DOMAIN=git.aadd.rocks
-      - GITEA__server__ROOT_URL=https://git.aadd.rocks
-      - GITEA__server__HTTP_PORT=3000
-      - GITEA__server__SSH_PORT=2222
-      - GITEA__server__SSH_LISTEN_PORT=22
-      - GITEA__database__DB_TYPE=sqlite3
-      - GITEA__security__INSTALL_LOCK=true
-      - TZ=America/Detroit
-    volumes:
-      - /opt/docker/gitea:/data
-    ports:
-      - "127.0.0.1:3000:3000"
-      - "0.0.0.0:2222:22"   # SSH clone — needs public exposure
-
   # ── PDF Tools (Stirling PDF) ──────────────────────────────────────────────
   # Browser-based PDF merge/split/compress — handy without home network
   stirling-pdf:
